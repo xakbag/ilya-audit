@@ -54,3 +54,7 @@ SERVER-SNAPSHOT.json
 /dom2/
 /src/
 run-step*.cmd
+
+# Дом 2: api.php с ключом записи
+house2/deploy/api.php
+house2/deploy/state.json

@@ -18,7 +18,7 @@
 - `CLAUDE.md`: задание, правила, гипотезы H1–H11.
 - `HANDOFF.md`: текущий шаг и следующее действие (до 60 строк).
 - `AUDIT-REPORT.md`: отчёт; `evidence/`: доказательства; `steps/`: скрипты шагов.
-- `dashboard/`, `infra/publish/`: доска и публикация на monitor.ai-ilya.ru.
+- `dashboard/`, `infra/publish/`: доска и публикация на ai-ilya.ru (корень).
 - `memory/`: копия памяти агента (в архиве).
 
 ## Открытые задачи
