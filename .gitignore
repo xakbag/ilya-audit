@@ -58,3 +58,13 @@ run-step*.cmd
 # Дом 2: api.php с ключом записи
 house2/deploy/api.php
 house2/deploy/state.json
+# Дом 2: данные (имена, комментарии) и шаблон с ключом — в публичный репо не класть
+house2/site/api.php
+house2/registry.csv
+house2/history.csv
+house2/site/data.js
+house2/backup/
+house2/build/
+house2/*.xlsx
+
+.claude/settings.local.json
