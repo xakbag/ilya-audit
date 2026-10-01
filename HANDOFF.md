@@ -2,11 +2,12 @@
 
 > «Продолжай» = прочитай CLAUDE.md и этот файл и выполни «Следующее действие». Подробности: `AUDIT-REPORT.md`, `evidence/`.
 
-**Обновлено:** 01.10.2026 22:30 — GitHub готов: https://github.com/xakbag/ilya-audit (PROJECT-OVERVIEW.md — старт для облака). ФОКУС: дизайн и функционал Дома 2 (`C:\Ilya-audit\house2`). СЕРВЕР СТОП до команды Ильи.
+**Обновлено:** 01.10.2026 (облачная сессия) — СЕРВЕР: работы ВОЗОБНОВЛЕНЫ Ильёй (01.10). ФОКУС сейчас: доска на https://ai-ilya.ru (см. «Доска ai-ilya.ru» ниже), затем Дом 2.
 **Домены (решение Ильи 01.10):** ai-ilya.online = Дом 2; ai-ilya.ru (корень) = доска умного сервера (публикация на паузе).
 **GitHub (решение Ильи 01.10):** после КАЖДОГО шага: обновить HANDOFF → `git add` только изменённых файлов → проверка на ключи (только счётчики, значения не печатать) → commit → `git push` (xakbag/ilya-audit, main). Остальные папки (house2, dashboard, infra…) не добавлять без отдельного «да».
 **Gateway:** `GATEWAY-RESUME.md`; архив `archive/gateway-handoff-20261001.zip`.
-**Доска:** локально `https://desktop-i53h0d8.taile433c9.ts.net/ai-map/monitor/` (Funnel, /healthz 200). Публичная версия ждёт владельца.
+**Доска ai-ilya.ru (01.10 облако):** ГОТОВО: сайт ai-ilya.ru в ispmanager (/www/ai-ilya.ru, залиты index.html+monitor.js); NS домена → ns1/ns2.hosting.reg.ru (заглушка 95.163.244.138 в панели reg.ru не удалялась — «редактирование запрещено»); в зоне хостинга добавлена A dom2 → 37.140.192.183; Let's Encrypt `ai-ilya.ru_le1` выпущен 20:07. С телефона https://ai-ilya.ru открывается: «нет данных (status.json недоступен)». На рабочем ПК ещё парковка (DNS-кэш).
+**СЛЕДУЮЩЕЕ ДЕЙСТВИЕ:** залить status.json. Готов `tools/publish-dashboard.cmd` (двойной клик): доступ local WSL → ssh Ilya@100.66.82.120 → `remote-server.py --script`; спрашивает логин/пароль SFTP (пароль только в /etc/smart-monitor-publish.netrc 600), ставит /usr/local/bin/smart-monitor-publish.sh + smart-monitor-publish.service/.timer (60 с), папку сайта ищет сам, успех = строка `[server] DONE`. Запуск 1–2 с рабочего ПК (Tailscale 100.117.11.110, WSL нет): ssh → Permission denied (publickey). Запуск 3 (через remote-server.py) — результата ещё нет. Десктоп-Claude: можно выполнить bash-часть файла через remote-server.py напрямую. Лог: xakbag/ilya-core-infra ветка claude/smart-ai-server-wgl4lu, docs/2026-10-01-dashboard-ai-ilya-ru.md. Также: сбросить пароли хостинга; баланс до 18.10; SSL для ai-ilya.online.
 ## Следующее действие (Дом 2)
 1. [СДЕЛАНО 01.10] Фильтр #fp: стр.233 слушает `input`+`change`. Превью `dom2` (8765) НЕ запускать без разрешения Ильи (отклонил запуск) — проверка фильтра в браузере не сделана.
 2. [СДЕЛАНО 01.10] build.py → «58 58»; data.js вклеен в `deploy/index.html` и `site/house2-single.html` (61234 байт, файлы идентичны); `node --check` OK.
