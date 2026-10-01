@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Журнал работ — Дом 2</title>
+<style>
+:root{--bg1:#fbfaf3;--bg2:#fdf3c8;--bg3:#eef2f7;--card:rgba(255,255,255,.62);--solid:#fff;--tx:#1b1c1e;--mut:#6c6f75;--bd:rgba(20,20,30,.09);--y:#f6c945;--ac:#1b1c1e;--onac:#fff;--hi:#e5484d;--mid:#e59a00;--low:#30a46c;--ok:#30a46c;--bad:#e5484d;--warn:#b26a00;--chip:rgba(20,20,30,.06);--or:#e8811a;--bl:#5b8def;--sh:0 8px 30px rgba(60,50,10,.08)}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg1:#131417;--bg2:#2b2510;--bg3:#141a22;--card:rgba(34,36,40,.62);--solid:#1f2124;--tx:#eceef0;--mut:#9aa0a6;--bd:rgba(255,255,255,.09);--ac:#f6c945;--onac:#1b1c1e;--warn:#f0b04a;--chip:rgba(255,255,255,.07);--sh:0 8px 30px rgba(0,0,0,.35)}}
+:root[data-theme=dark]{--bg1:#131417;--bg2:#2b2510;--bg3:#141a22;--card:rgba(34,36,40,.62);--solid:#1f2124;--tx:#eceef0;--mut:#9aa0a6;--bd:rgba(255,255,255,.09);--ac:#f6c945;--onac:#1b1c1e;--warn:#f0b04a;--chip:rgba(255,255,255,.07);--sh:0 8px 30px rgba(0,0,0,.35)}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;color:var(--tx);font:15px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif;background:radial-gradient(1100px 600px at 90% -10%,var(--bg2),transparent 60%),radial-gradient(900px 520px at -10% 25%,var(--bg3),transparent 60%),var(--bg1);background-attachment:fixed}
+.w{max-width:1000px;margin:0 auto;padding:14px 16px 70px}
+.g{background:var(--card);border:1px solid var(--bd);border-radius:22px;box-shadow:var(--sh);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)}
+header{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:space-between;margin:4px 0 12px}
+#hi{color:var(--mut);font-size:13px}#hi b{display:block;color:var(--tx);font-size:13px;font-weight:500}
+h1{font-size:26px;line-height:1.15;margin:2px 0 0;letter-spacing:-.01em}
+button,select,input,textarea{font:inherit;color:var(--tx);background:var(--solid);border:1px solid var(--bd);border-radius:99px;padding:7px 14px}
+textarea{border-radius:14px;resize:vertical}
+button{cursor:pointer;transition:background .15s,transform .1s}button:active{transform:scale(.97)}
+button.on{background:var(--ac);color:var(--onac);border-color:var(--ac)}
+:focus-visible{outline:2px solid var(--y);outline-offset:2px}
+.sum{display:grid;grid-template-columns:minmax(200px,1fr) 2fr;gap:14px;padding:14px;margin:0 0 12px}
+.gauge{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;position:relative;padding:4px 0}
+.gauge svg{width:100%;max-width:210px}.gauge path{fill:none;stroke-width:12;stroke-linecap:round}
+.gb{stroke:var(--chip)}.gf{stroke:var(--y);transition:stroke-dasharray .5s}
+.gauge b{font-size:34px;margin-top:-46px;letter-spacing:-.02em}.gauge span{color:var(--mut);font-size:12px;margin-top:6px}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.kpi{text-align:left;border-radius:18px;padding:10px 12px;background:var(--solid);display:flex;flex-direction:column;gap:2px;min-height:86px}
+.kpi b{font-size:26px;line-height:1.1;letter-spacing:-.02em}.kpi span{color:var(--mut);font-size:12px}
+.kpi.on span{color:inherit;opacity:.8}
+.mb{display:block;height:5px;border-radius:99px;background:var(--chip);margin-top:auto;overflow:hidden}.mb i{display:block;height:100%;background:var(--y);border-radius:99px}
+.tabs{display:inline-flex;gap:4px;padding:4px;margin:0 0 10px;border-radius:99px}.tabs button{border:0;background:transparent}.tabs button.on{background:var(--ac)}
+.stk{position:sticky;top:6px;z-index:5;padding:10px;margin-bottom:6px}
+.fl{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.fl input{grid-column:1/-1}
+#chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.c{position:relative;overflow:hidden;margin:10px 0;border-radius:20px}
+.c::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:transparent}
+.c.p-high::before{background:var(--hi)}.c.p-mid::before{background:var(--mid)}.c.p-low::before{background:var(--low)}
+.c>summary{list-style:none;cursor:pointer;padding:12px 14px 12px 18px;display:flex;gap:6px 10px;flex-wrap:wrap;align-items:center}
+.c>summary::-webkit-details-marker{display:none}
+.id{font-weight:700;font-size:13px;background:var(--chip);border-radius:99px;padding:2px 9px}
+.t{flex:1 1 240px;font-weight:500}.z{color:var(--mut);font-size:13px}
+.bs{display:flex;flex-wrap:wrap;gap:4px}
+.b{font-size:12px;padding:2px 9px;border-radius:99px;background:var(--chip);white-space:nowrap}
+.b.buy{color:var(--warn)}.b.q{color:var(--bad)}.b.late{background:var(--bad);color:#fff}.b.done{color:var(--ok)}
+.b.pr.p-high{background:var(--hi);color:#fff}.b.pr.p-mid{background:var(--mid);color:#fff}.b.pr.p-low{background:var(--low);color:#fff}
+.b.s1{background:rgba(246,201,69,.35)}.b.s2{background:var(--ok);color:#fff}.b.ed{color:var(--mut);font-style:italic}
+.dn{margin-left:auto;font-size:13px;padding:6px 12px;white-space:nowrap}
+.dn.on{background:var(--ok);border-color:var(--ok);color:#fff}
+.c.s-done{opacity:.72}.c.s-done .t{text-decoration:line-through;text-decoration-color:var(--mut)}
+.c.s-late:not(.p-high)::before{background:var(--bad)}
+.bd{padding:6px 16px 14px 18px;border-top:1px solid var(--bd);display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px 16px}
+.bd dl{margin:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:4px 16px}
+.bd dt{color:var(--mut);font-size:12px}.bd dd{margin:0 0 4px}
+.wide{grid-column:1/-1}
+.pills{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.pp{min-height:38px;padding:6px 14px}
+.pp.on.p-high{background:var(--hi);border-color:var(--hi);color:#fff}.pp.on.p-mid{background:var(--mid);border-color:var(--mid);color:#fff}.pp.on.p-low{background:var(--low);border-color:var(--low);color:#fff}
+.pp.p-high:not(.on){color:var(--hi)}.pp.p-mid:not(.on){color:var(--mid)}.pp.p-low:not(.on){color:var(--low)}
+.acts{display:flex;flex-wrap:wrap;gap:8px}.acts button{min-height:40px}
+.note{font-size:12px;color:var(--mut);margin:6px 0}
+.note.pend{background:#fff3c4;color:#5c4400;border:1px solid #e6c34a;border-radius:12px;padding:6px 10px;font-size:13px}
+.gh{display:flex;justify-content:space-between;align-items:baseline;margin:22px 4px 4px;font-weight:600;font-size:16px}
+.gh span{color:var(--mut);font-size:13px;font-weight:400}
+#v2{padding:14px}
+table{width:100%;border-collapse:collapse}td,th{padding:8px 6px;border-bottom:1px solid var(--bd);text-align:left;vertical-align:top}
+.cp{width:100%;min-height:44px;margin:8px 0;background:var(--ac);color:var(--onac);border-color:var(--ac)}
+.hid{display:none!important}
+#foot{display:none}#foot.show{display:block}.info{float:right;margin-top:14px}
+dialog{border:1px solid var(--bd);border-radius:24px;padding:0;width:min(720px,94vw);max-height:90vh;background:var(--solid);color:var(--tx);box-shadow:0 20px 60px rgba(0,0,0,.25)}
+dialog::backdrop{background:rgba(20,20,10,.35);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+dialog form{display:flex;flex-direction:column;max-height:90vh}
+dialog h2{margin:0;padding:16px 20px 8px;font-size:18px}
+.mf{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px 14px;padding:8px 20px;overflow:auto}
+.ff{display:flex;flex-direction:column;gap:4px}.ff label,.ff .lb{font-size:12px;color:var(--mut)}
+.ff input:not([type=checkbox]),.ff select,.ff textarea{width:100%;border-radius:12px}
+.ff .cbx{display:flex;gap:8px;align-items:center;font-size:15px;color:var(--tx);min-height:40px}
+.ff input[type=checkbox]{width:20px;height:20px}
+.rs{align-self:flex-start;font-size:12px;padding:2px 10px;color:var(--mut)}
+.ma{display:flex;gap:8px;justify-content:flex-end;padding:12px 20px 16px;border-top:1px solid var(--bd)}
+.pri{background:var(--ac);color:var(--onac);border-color:var(--ac)}
+#toast{position:fixed;left:50%;bottom:18px;transform:translate(-50%,140%);display:flex;gap:12px;align-items:center;background:var(--ac);color:var(--onac);padding:10px 16px;border-radius:99px;box-shadow:var(--sh);transition:transform .25s;z-index:20;max-width:92vw}
+#toast.show{transform:translate(-50%,0)}#toast button{background:transparent;color:inherit;border-color:currentColor;padding:4px 12px}
+@media(max-width:700px){.sum{grid-template-columns:1fr}.tiles{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){button,select,input{min-height:44px;font-size:16px}textarea{font-size:16px}h1{font-size:22px}.c>summary{padding:12px 12px 12px 16px}.dn{margin-left:0}}
+@media print{.row2,.stk,#chips,.tabs,#th,#lang,.dn,.acts,.pills,#info,dialog,#toast{display:none!important}body{background:#fff;color:#000}.g{box-shadow:none;backdrop-filter:none;background:#fff}.c{break-inside:avoid}}
+
+body{background:radial-gradient(1100px 600px at 90% -10%,var(--bg2),transparent 60%),radial-gradient(700px 500px at 55% 35%,rgba(246,201,69,.16),transparent 70%),radial-gradient(900px 520px at -10% 25%,var(--bg3),transparent 60%),var(--bg1);background-attachment:fixed}
+.gauge path{stroke-linecap:butt}.gauge path.gb{stroke-linecap:round}
+.gd{stroke:var(--ok)}.gw{stroke:var(--or)}.gn{stroke:var(--bl)}
+.dot{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:6px;flex:none}.dot.gd{background:var(--ok)}.dot.gw{background:var(--or)}.dot.gn{background:var(--bl)}
+.glg{list-style:none;margin:10px 0 0;padding:0;width:100%;max-width:230px;font-size:12px;text-align:left}.glg li{display:flex;align-items:center;padding:4px 0;border-top:1px dashed var(--bd)}.glg b{margin-left:auto;font-size:12px;margin-top:0}
+.kh{display:flex;justify-content:space-between;align-items:center;gap:6px;color:var(--mut);font-size:12px}
+.kpi.on .kh{color:inherit;opacity:.85}
+.bdg{font-style:normal;font-size:11px;padding:1px 7px;border-radius:99px;background:rgba(48,164,108,.15);color:var(--ok);white-space:nowrap}
+.kpi.on .bdg{background:rgba(255,255,255,.2);color:inherit}
+.sp{display:flex;align-items:flex-end;gap:3px;height:26px;margin-top:auto}.sp i{flex:1;background:var(--tx);opacity:.75;border-radius:2px}.sp i.z0{opacity:.15}
+.kpi.on .sp i{background:var(--onac)}
+.row2{display:grid;grid-template-columns:3fr 2fr;gap:12px;margin:0 0 12px}
+.pan{padding:14px 16px}
+.ph{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:12px}.ph b{font-size:15px}.ph span{color:var(--mut);font-size:12px}
+.segs{display:flex;flex-wrap:wrap;gap:12px 6px}
+.sg{flex:var(--n) 1 0;min-width:86px;display:flex;flex-direction:column;gap:5px}
+.sb{display:flex;gap:2px;height:30px}.sb i{flex:1;border-radius:4px;background:var(--bl);opacity:.3}.sb i.k1{background:var(--or);opacity:1}.sb i.k2{background:var(--ok);opacity:1}
+.sg span{font-size:11px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sg span b{color:var(--tx);font-weight:600}
+.lgd{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:14px;font-size:12px;color:var(--mut);align-items:center}
+.tw{max-height:290px;overflow:auto;margin:0 -4px}
+#team td,#team th{padding:7px 4px;font-size:13px;vertical-align:middle}#team th{color:var(--mut);font-weight:500;font-size:12px;position:sticky;top:0;background:var(--solid)}
+#team td.n{text-align:right;font-variant-numeric:tabular-nums;color:var(--mut)}
+.lnk{border:0;background:none;padding:0;text-align:left;font-weight:500;border-radius:6px}.lnk:hover{text-decoration:underline}
+.st{font-size:11px;padding:2px 9px;border-radius:99px;white-space:nowrap}.st.ok{background:rgba(48,164,108,.15);color:var(--ok)}.st.bad{background:rgba(229,72,77,.14);color:var(--bad)}.st.w{background:rgba(240,138,36,.16);color:var(--or)}.st.n{background:var(--chip);color:var(--mut)}
+tr.sel td{background:rgba(246,201,69,.18)}
+@media(max-width:800px){.row2{grid-template-columns:1fr}}
+@media(max-width:600px){.lnk{min-height:0;font-size:14px}}
+</style>
+</head>
+<body>
+<div class="w">
+<header><div><div id="hi"></div><h1 id="h1"></h1></div><div><button id="addTask" class="pri" style="font-size:16px;padding:9px 18px;margin-right:8px">➕ Поставить задачу</button><button id="lang"></button> <button id="th" aria-label="Тема">◐</button></div></header>
+<section class="sum g" id="sum"></section>
+<div class="row2"><section class="g pan" id="prog"></section><section class="g pan" id="team"></section></div>
+<div class="tabs g"><button id="t1" class="on"></button><button id="t2"></button></div>
+<div id="v1">
+ <div class="stk g"><div class="fl">
+  <input id="q" type="search">
+  <select id="fe"></select><select id="fz"></select><select id="fs"></select><select id="fp"></select><select id="fm"></select>
+  <select id="so"></select>
+ </div>
+ <div id="chips"></div></div>
+ <div id="list"></div>
+</div>
+<div id="v2" class="g hid"><div class="note" id="sn"></div><button class="cp" id="cp"></button><table id="buy"></table></div>
+<button class="info" id="info" aria-label="i">i</button><p class="note" id="foot"></p>
+</div>
+<dialog id="dlg"><form id="ef"><h2 id="mt"></h2><div class="mf" id="mf"></div><div class="ma"><button type="button" id="mc"></button><button type="submit" id="ms" class="pri"></button></div></form></dialog>
+<dialog id="newTaskDlg"><form id="ntf"><h2>Новая задача</h2><div class="mf" style="grid-template-columns:1fr"><div class="ff"><label>Опишите задачу текстом или голосом</label><textarea id="taskInput" rows="5" placeholder="Например: Смонтировать зеркала в прихожей первого этажа, исполнитель Сергей, высокий приоритет"></textarea><div style="display:flex;gap:8px;margin-top:6px"><button type="button" id="voiceBtn" style="background:var(--ac);color:var(--onac);border-color:var(--ac)">🎤 Голосовой ввод</button><span id="voiceStatus" style="font-size:12px;color:var(--mut);align-self:center"></span></div></div></div><div class="ma"><button type="button" id="ntCancel">Отмена</button><button type="submit" class="pri">Создать задачу</button></div></form></dialog>
+<div id="toast" role="status" aria-live="polite"></div>
+<script src="data.js"></script>
+<script>
+const I={ru:{title:'Журнал работ — Дом 2',f_mine:'Мои',print:'Печать',all:'Все',list:'Задачи',supply:'Снабжение',search:'Поиск по задаче, материалу, исполнителю…',exec:'Исполнитель',zone:'Зона',status:'Статус',mat:'Материалы',sort:'Сортировка',sId:'По номеру',sDl:'По сроку',sPr:'По приоритету',sSt:'По статусу',total:'Всего задач',buy:'Нужна закупка',q:'Есть вопрос',late:'Просрочено',noDl:'Без срока',f_buy:'нужна закупка',f_q:'есть вопрос',f_late:'просрочено',deadline:'Срок',prio:'Приоритет',set:'Дата постановки',resp:'Ответственный',type:'Вид работ',cat:'Категория',purch:'Закупка',comm:'Комментарий',none:'не указан',bought:'куплено',item:'Что купить',forTasks:'Для задач',pend:'Правка Ильи ещё не внесена в таблицу',sn:'Отметка «куплено» хранится только в этом браузере.',foot:'Данные — зеркало реестра от 30.09.2026. Правки на этом сайте сохраняются только в браузере; запись в Google-таблицу включается отдельным решением Ильи.',high:'Высокий',mid:'Средний',low:'Низкий',shown:'Показано',ofN:'из',noBuy:'Закупок нет',inwork:'В работе',done:'Готово',copy:'Скопировать список',copied:'Скопировано',doneN:'выполнено',forT:'для',
+ stNew:'Новая',stDone:'Выполнена',markDone:'Выполнено',edit:'Редактировать',editT:'Задача',save:'Сохранить',cancel:'Отмена',resetAll:'Сбросить правки',resetQ:'Вернуть задачу к данным реестра?',orig:'как в реестре',edited:'изменено',undo:'Отменить',doneMsg:'отмечена выполненной',saved:'Изменения сохранены',highN:'Высокий приоритет',taskF:'Задача',floor:'Этаж / зона',room:'Помещение',gm:'Доброе утро',gd:'Добрый день',ge:'Добрый вечер',reset:'Правки сброшены'},
+uz:{title:'Ishlar jurnali — Uy 2',f_mine:'Meniki',print:'Chop etish',all:'Hammasi',list:'Vazifalar',supply:'Ta’minot',search:'Vazifa, material, ijrochi bo‘yicha qidirish…',exec:'Ijrochi',zone:'Hudud',status:'Holat',mat:'Materiallar',sort:'Saralash',sId:'Raqam bo‘yicha',sDl:'Muddat bo‘yicha',sPr:'Ustuvorlik bo‘yicha',sSt:'Holat bo‘yicha',total:'Jami vazifalar',buy:'Xarid kerak',q:'Savol bor',late:'Muddati o‘tgan',noDl:'Muddatsiz',f_buy:'xarid kerak',f_q:'savol bor',f_late:'muddati o‘tgan',deadline:'Muddat',prio:'Ustuvorlik',set:'Qo‘yilgan sana',resp:'Mas’ul',type:'Ish turi',cat:'Toifa',purch:'Xarid',comm:'Izoh',none:'ko‘rsatilmagan',bought:'sotib olingan',item:'Nima sotib olish kerak',forTasks:'Vazifalar',pend:'Ilyaning tuzatishi jadvalga hali kiritilmagan',sn:'«Sotib olingan» belgisi faqat shu brauzerda saqlanadi.',foot:'Ma’lumotlar — 30.09.2026 holatidagi reyestr nusxasi. Bu saytdagi tuzatishlar faqat brauzerda saqlanadi; Google-jadvalga yozish Ilya alohida qarori bilan yoqiladi.',high:'Yuqori',mid:'O‘rta',low:'Past',shown:'Ko‘rsatilgan',ofN:'dan',noBuy:'Xaridlar yo‘q',inwork:'Jarayonda',done:'Tayyor',copy:'Ro‘yxatni nusxalash',copied:'Nusxalandi',doneN:'bajarilgan',forT:'uchun',
+ stNew:'Yangi',stDone:'Bajarildi',markDone:'Bajarildi',edit:'Tahrirlash',editT:'Vazifa',save:'Saqlash',cancel:'Bekor qilish',resetAll:'Tuzatishlarni bekor qilish',resetQ:'Vazifani reyestr ma’lumotlariga qaytarish?',orig:'reyestrdagidek',edited:'o‘zgartirilgan',undo:'Qaytarish',doneMsg:'bajarilgan deb belgilandi',saved:'O‘zgarishlar saqlandi',highN:'Yuqori ustuvorlik',taskF:'Vazifa',floor:'Qavat / hudud',room:'Xona',gm:'Xayrli tong',gd:'Xayrli kun',ge:'Xayrli kech',reset:'Tuzatishlar bekor qilindi'}};
+// Значения поля «Статус/материалы» на узбекском — только из листа переводов; остальные поля (имена, ID, числа, единицы) не переводятся.
+const T=window.TASKS;
+Object.assign(I.ru,{byZone:'Прогресс по зонам',team:'Исполнители',tasksN:'Задач',ready:'Готово',notSt:'Не начато',lateS:'Просрочка',ofAll:'от всех',tapEx:'нажмите — покажу задачи',allEx:'Все исполнители'});
+Object.assign(I.ru,{roMsg:'Только просмотр: правка доступна по ссылке с ключом',syncErr:'Нет связи с сервером — правка не сохранена'});
+Object.assign(I.uz,{roMsg:'Faqat ko‘rish: tahrirlash kalitli havola orqali',syncErr:'Server bilan aloqa yo‘q — saqlanmadi'});
+Object.assign(I.uz,{byZone:'Hududlar bo‘yicha',team:'Ijrochilar',tasksN:'Vazifa',ready:'Tayyor',notSt:'Boshlanmagan',lateS:'Muddati o‘tgan',ofAll:'jamidan',tapEx:'bosing — vazifalarni ko‘rsataman',allEx:'Barcha ijrochilar'});let L=(()=>{try{return localStorage.getItem('lang')}catch(e){}})()||'ru',fl={},kf='',cur=null;
+const S=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}};
+let ed=S('ed',{}),bought=S('bought',{});
+// Задачи, созданные на сайте (голос/текст), хранятся в localStorage 'nt'
+const NT=S('nt',[]);NT.forEach(x=>{x.uz=x.uz||{};if(!T.some(y=>y.task_id===x.task_id))T.push(x)});
+const saveNT=()=>{try{localStorage.setItem('nt',JSON.stringify(NT))}catch(_){}};
+// Общие правки: сервер api.php (GET — все видят, POST — только с ключом из ссылки ?k=...)
+const API='api.php';
+let WK=(()=>{try{const k=new URLSearchParams(location.search).get('k');if(k){localStorage.setItem('wk',k);history.replaceState(null,'',location.pathname)}return localStorage.getItem('wk')||''}catch(_){return ''}})();
+let online=false;
+function applyState(st){if(!st||typeof st!=='object')return;online=true;
+ ed=st.ed&&typeof st.ed==='object'?st.ed:{};bought=st.bought&&typeof st.bought==='object'?st.bought:{};
+ (st.nt||[]).forEach(x=>{if(!T.some(y=>y.task_id===x.task_id)){x.uz={};x.pending=false;T.push(x)}});
+ save();try{localStorage.setItem('bought',JSON.stringify(bought))}catch(_){}}
+async function pull(){if(location.protocol==='file:')return;try{const r=await fetch(API,{cache:'no-store'});if(!r.ok)return;const st=await r.json(),le=ed,lb=bought;applyState(st);
+  // первый запуск: сервер пуст, а в этом браузере уже есть правки — переносим их на сервер
+  if(WK&&!st.v&&(Object.keys(le).length||Object.keys(lb).length)){await push({ed:le,bought:lb})}refresh();
+  if(WK&&NT.length){const n=NT.splice(0);saveNT();push({nt:n})}}catch(_){}}
+async function push(patch){if(!online)return;if(!WK){toast(t('roMsg'));pull();return}
+ try{const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json','X-Key':WK},body:JSON.stringify(patch)});
+  if(r.status===403){WK='';try{localStorage.removeItem('wk')}catch(_){}toast(t('roMsg'));pull();return}
+  if(!r.ok)throw 0;applyState(await r.json());refresh()}catch(_){toast(t('syncErr'))}}
+const pushEd=id=>push({ed:{[id]:ed[id]||null}});
+setInterval(()=>{if(!document.hidden&&!$('dlg').open&&!$('newTaskDlg').open)pull()},30000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)pull()});
+
+const $=id=>document.getElementById(id),t=k=>I[L][k]??I.ru[k]??k;
+const byId=id=>T.find(x=>x.task_id===id);
+const orig=(id,f)=>(byId(id)||{})[f];
+const save=()=>{try{localStorage.setItem('ed',JSON.stringify(ed))}catch(_){}};
+const norm=s=>String(s??'').replace(/\r\n?/g,'\n');
+// Правка хранится только если отличается от реестра; совпадение с оригиналом удаляет её.
+function setF(id,f,v){if(norm(v)===norm(orig(id,f))){if(ed[id]){delete ed[id][f];if(!Object.keys(ed[id]).length)delete ed[id]}}else(ed[id]=ed[id]||{})[f]=v;save();if(!batch)pushEd(id)}
+let batch=false;
+const isEd=(id,f)=>!!ed[id]&&(f?f in ed[id]:Object.keys(ed[id]).length>0);
+const get=(x,f)=>(ed[x.task_id]||{})[f]??x[f];
+const tx=(x,f,uzf)=>L==='uz'&&x.uz[uzf]&&!isEd(x.task_id,f)?x.uz[uzf]:get(x,f);
+const today=new Date().toISOString().slice(0,10);
+const dl=x=>get(x,'deadline')||'';
+const late=x=>dl(x)&&dl(x)<today&&get(x,'status')!=='Выполнена';
+const isQ=x=>/уточн|вопрос|\?/i.test(get(x,'materials_status')+' '+get(x,'comment'));
+const buy=x=>String(get(x,'purchase_required'))==='True';
+const PR=['Высокий','Средний','Низкий'],ST=['Новая','В работе','Выполнена'];
+const pr={'Высокий':0,'Средний':1,'Низкий':2},so={'В работе':0,'Новая':1,'Выполнена':2};
+const pcls={'Высокий':'p-high','Средний':'p-mid','Низкий':'p-low'};
+const stL=s=>({'Новая':t('stNew'),'В работе':t('inwork'),'Выполнена':t('stDone')}[s]||s);
+const prL=p=>({'Высокий':t('high'),'Средний':t('mid'),'Низкий':t('low')}[p]||p);
+const KF={inw:x=>get(x,'status')==='В работе',hi:x=>get(x,'priority')==='Высокий',buy,late,q:isQ};
+const uniq=f=>[...new Set(T.map(x=>get(x,f)).filter(Boolean))].sort();
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function sel(el,label,pairs){const v=el.value;el.innerHTML='<option value="">'+esc(label)+': '+t('all')+'</option>'+pairs.map(([a,b])=>'<option value="'+esc(a)+'">'+esc(b)+'</option>').join('');el.value=v}
+const opts=(el,label,vals)=>sel(el,label,vals.map(a=>[a,a]));
+const zk=x=>get(x,'floor_zone')+' · '+get(x,'room');
+function filt(){const q=$('q').value.toLowerCase(),fp=$('fp').value;
+ let a=T.filter(x=>(!$('fe').value||get(x,'executor')===$('fe').value)&&(!$('fz').value||zk(x)===$('fz').value)&&(!$('fs').value||get(x,'status')===$('fs').value)&&(!$('fm').value||get(x,'materials_status')===$('fm').value)
+ &&(!fp||(fp==='_'?!get(x,'priority'):get(x,'priority')===fp))&&(!kf||KF[kf](x))
+ &&(!fl.mine||get(x,'executor')===S('me',''))&&(!fl.buy||buy(x))&&(!fl.q||isQ(x))&&(!fl.late||late(x))
+ &&(!q||[x.task_id,get(x,'task'),get(x,'executor'),get(x,'responsible'),get(x,'materials_status'),get(x,'purchase_item_or_action'),get(x,'room'),get(x,'category'),get(x,'comment'),x.uz.work,x.uz.zone].join(' ').toLowerCase().includes(q)));
+ const s=$('so').value,id=(p,r)=>p.task_id.localeCompare(r.task_id,undefined,{numeric:true});
+ a.sort((p,r)=>(s==='dl'?(dl(p)||'9').localeCompare(dl(r)||'9'):s==='pr'?(pr[get(p,'priority')]??9)-(pr[get(r,'priority')]??9):s==='st'?(so[get(p,'status')]??9)-(so[get(r,'status')]??9):0)||id(p,r));
+ return a}
+function card(x){const id=x.task_id,pv=get(x,'priority')||'',stt=get(x,'status'),isD=stt==='Выполнена';
+ const b=[];if(pv)b.push('<span class="b pr '+(pcls[pv]||'')+'">'+esc(prL(pv))+'</span>');
+ if(stt&&stt!=='Новая')b.push('<span class="b s'+ST.indexOf(stt)+'">'+esc(stL(stt))+'</span>');
+ if(buy(x))b.push('<span class="b buy">'+t('f_buy')+'</span>');if(isQ(x))b.push('<span class="b q">'+t('f_q')+'</span>');if(late(x))b.push('<span class="b late">'+t('f_late')+'</span>');
+ if(isEd(id))b.push('<span class="b ed">✎ '+t('edited')+'</span>');
+ const cl=['c','g',pcls[pv]||'',isD?'s-done':'',late(x)?'s-late':''].join(' ');
+ const zone=L==='uz'&&x.uz.zone&&!isEd(id,'floor_zone')&&!isEd(id,'room')?x.uz.zone:zk(x);
+ const pill=(attr,v,on,cls,lab)=>'<button type="button" class="pp '+cls+(on?' on':'')+'" '+attr+'="'+id+'|'+esc(v)+'" aria-pressed="'+on+'">'+lab+'</button>';
+ return '<details class="'+cl+'" data-id="'+id+'"><summary><span class="id">'+id+'</span><span class="t">'+esc(tx(x,'task','work'))+'</span><span class="z">'+esc(zone)+'</span><span class="bs">'+b.join('')+'</span>'
+ +'<button type="button" class="dn'+(isD?' on':'')+'" data-done="'+id+'" aria-pressed="'+isD+'">✓ '+t('markDone')+'</button></summary><div class="bd">'
+ +'<dl class="wide">'
+ +'<div><dt>'+t('exec')+'</dt><dd>'+esc(get(x,'executor')||t('none'))+'</dd></div>'
+ +'<div><dt>'+t('resp')+'</dt><dd>'+esc(get(x,'responsible')||t('none'))+'</dd></div>'
+ +'<div><dt>'+t('cat')+'</dt><dd>'+esc(get(x,'category'))+'</dd></div>'
+ +'<div><dt>'+t('type')+'</dt><dd>'+esc(get(x,'task_type'))+'</dd></div>'
+ +'<div><dt>'+t('mat')+'</dt><dd>'+esc(tx(x,'materials_status','materials'))+'</dd></div>'
+ +'<div><dt>'+t('purch')+'</dt><dd>'+(buy(x)?esc(get(x,'purchase_item_or_action')):'—')+'</dd></div>'
+ +'<div><dt>'+t('deadline')+'</dt><dd>'+esc(dl(x)||t('none'))+'</dd></div>'
+ +'<div class="wide"><dt>'+t('comm')+'</dt><dd>'+esc(get(x,'comment')||'—')+'</dd></div></dl>'
+ +'<div class="wide"><dt>'+t('prio')+'</dt><div class="pills">'+['',...PR].map(p=>pill('data-pr',p,pv===p,pcls[p]||'',p?esc(prL(p)):'—')).join('')+'</div></div>'
+ +'<div class="wide"><dt>'+t('status')+'</dt><div class="pills">'+ST.map(s=>pill('data-st',s,stt===s,'',esc(stL(s)))).join('')+'</div></div>'
+ +(x.pending?'<div class="wide note pend">⚠ '+t('pend')+'</div>':'')
+ +'<div class="wide acts"><button type="button" data-edit="'+id+'">✎ '+t('edit')+'</button>'+(isEd(id)?'<button type="button" data-reset="'+id+'">↺ '+t('resetAll')+'</button>':'')+'</div>'
+ +'</div></details>'}
+function renderList(){const a=filt();const g={};a.forEach(x=>{const k=zk(x);(g[k]=g[k]||[]).push(x)});
+ const isD=x=>get(x,'status')==='Выполнена';
+ $('list').innerHTML='<p class="note">'+t('shown')+' '+a.length+' '+t('ofN')+' '+T.length+'</p>'+Object.keys(g).sort().map(k=>'<div class="gh">'+esc(k)+'<span>'+g[k].filter(isD).length+' '+t('ofN')+' '+g[k].length+' '+t('doneN')+'</span></div>'+g[k].map(card).join('')).join('')}
+const isDn=x=>get(x,'status')==='Выполнена';
+const stK=x=>isDn(x)?2:get(x,'status')==='В работе'?1:0;
+const ZN=()=>{const c={};T.forEach(x=>{const k=get(x,'floor_zone')||'—';c[k]=(c[k]||0)+1});return Object.keys(c).sort((p,r)=>c[r]-c[p]||p.localeCompare(r))};
+// Мини-график: число задач по зонам (как столбики в KPI референса).
+function bars(f){const v=ZN().map(k=>T.filter(x=>(get(x,'floor_zone')||'—')===k&&f(x)).length),m=Math.max(1,...v);
+ return '<span class="sp" aria-hidden="true">'+v.map(n=>'<i style="height:'+Math.max(10,Math.round(100*n/m))+'%"'+(n?'':' class="z0"')+'></i>').join('')+'</span>'}
+const lgd=()=>[['gd','stDone'],['gw','inwork'],['gn','stNew']].map(([c,k])=>'<span><i class="dot '+c+'"></i>'+esc(t(k))+'</span>').join('');
+function renderSum(){const N=T.length,n=f=>T.filter(f).length,dn=n(isDn),iw=n(KF.inw),nw=N-dn-iw,p=Math.round(100*dn/N);
+ const arc='d="M10 62a50 50 0 0 1 100 0" pathLength="100"';let off=0;
+ const seg=[[dn,'gd'],[iw,'gw'],[nw,'gn']].map(([c,cl])=>{const l=100*c/N,r=c?'<path '+arc+' class="'+cl+'" stroke-dasharray="'+Math.max(.5,l-(c<N?1.2:0)).toFixed(2)+' 200" stroke-dashoffset="'+(-off).toFixed(2)+'"/>':'';off+=l;return r}).join('');
+ const lg=[['gd',t('stDone'),dn],['gw',t('inwork'),iw],['gn',t('stNew'),nw]].map(([c,l,v])=>'<li><i class="dot '+c+'"></i>'+esc(l)+'<b>'+v+'</b></li>').join('');
+ const tiles=[['',t('total'),()=>true],['inw',t('inwork'),KF.inw],['hi',t('highN'),KF.hi],['buy',t('buy'),buy],['late',t('late'),late],['q',t('q'),isQ]];
+ $('sum').innerHTML='<div class="gauge"><svg viewBox="0 0 120 70" aria-hidden="true"><path '+arc+' class="gb"/>'+seg+'</svg><b>'+p+'%</b><span>'+t('doneN')+': '+dn+' '+t('ofN')+' '+N+'</span><ul class="glg">'+lg+'</ul></div>'
+ +'<div class="tiles">'+tiles.map(([k,l,f])=>{const v=n(f);return '<button type="button" class="kpi'+(kf===k?' on':'')+'" data-k="'+k+'" aria-pressed="'+(kf===k)+'"><span class="kh">'+esc(l)+(k?'<em class="bdg">'+Math.round(100*v/N)+'%</em>':'')+'</span><b>'+v+'</b>'+bars(f)+'</button>'}).join('')+'</div>';
+ renderProg();renderTeam()}
+function renderProg(){const id=(p,r)=>p.task_id.localeCompare(r.task_id,undefined,{numeric:true});
+ $('prog').innerHTML='<div class="ph"><b>'+t('byZone')+'</b><span>'+T.filter(isDn).length+' / '+T.length+'</span></div><div class="segs">'+ZN().map(k=>{const a=T.filter(x=>(get(x,'floor_zone')||'—')===k).sort(id),d=a.filter(isDn).length;
+  return '<div class="sg" style="--n:'+a.length+'"><div class="sb">'+a.map(x=>'<i class="k'+stK(x)+'" title="'+x.task_id+' · '+esc(stL(get(x,'status')))+'"></i>').join('')+'</div><span title="'+esc(k)+'"><b>'+esc(k)+'</b> · '+d+'/'+a.length+'</span></div>'}).join('')+'</div><div class="lgd">'+lgd()+'</div>'}
+function renderTeam(){const m={};T.forEach(x=>{const k=get(x,'executor')||'';(m[k]=m[k]||[]).push(x)});const fe=$('fe').value;
+ const rows=Object.keys(m).sort((p,r)=>m[r].length-m[p].length||p.localeCompare(r)).map(k=>{const a=m[k],d=a.filter(isDn).length,w=a.filter(KF.inw).length,lt=a.filter(late).length;
+  const st=lt?['bad',t('lateS')+' '+lt]:d===a.length?['ok',t('ready')]:w||d?['w',t('inwork')]:['n',t('notSt')];
+  return '<tr'+(fe===k&&k?' class="sel"':'')+'><td><button type="button" class="lnk" data-ex="'+esc(k)+'">'+esc(k||t('none'))+'</button></td><td class="n">'+a.length+'</td><td class="n">'+d+'</td><td><span class="st '+st[0]+'">'+esc(st[1])+'</span></td></tr>'}).join('');
+ $('team').innerHTML='<div class="ph"><b>'+t('team')+'</b><span>'+(fe?'<button type="button" class="lnk" data-ex="">✕ '+esc(t('allEx'))+'</button>':esc(t('tapEx')))+'</span></div><div class="tw"><table><tr><th>'+t('exec')+'</th><th class="n">'+t('tasksN')+'</th><th class="n">'+t('ready')+'</th><th>'+t('status')+'</th></tr>'+rows+'</table></div>'}
+$('team').addEventListener('click',e=>{const b=e.target.closest('[data-ex]');if(!b)return;const v=b.dataset.ex;$('fe').value=$('fe').value===v?'':v;renderList();renderTeam();$('t1').click();if($('fe').value)$('v1').scrollIntoView({behavior:'smooth',block:'start'})});
+function renderBuy(){const m={};T.filter(buy).forEach(x=>{const k=get(x,'purchase_item_or_action')||'—';(m[k]=m[k]||[]).push(x.task_id)});
+ const ks=Object.keys(m).sort();$('buy').innerHTML=ks.length?'<tr><th></th><th>'+t('item')+'</th></tr>'+ks.map(k=>'<tr><td><input type="checkbox" data-b="'+esc(k)+'"'+(bought[k]?' checked':'')+'></td><td><b>'+esc(k)+'</b>'+(bought[k]?' <span class="b done">'+t('bought')+'</span>':'')+'<div class="note">'+t('forT')+' '+m[k].join(', ')+'</div></td></tr>').join(''):'<tr><td>'+t('noBuy')+'</td></tr>';
+ window.BL=ks.filter(k=>!bought[k]).map(k=>'• '+k+' ('+t('forT')+' '+m[k].join(', ')+')').join('\n')}
+function chips(){$('chips').innerHTML=[['mine','f_mine'],['buy','f_buy'],['q','f_q'],['late','f_late']].map(a=>'<button data-c="'+a[0]+'" class="'+(fl[a[0]]?'on':'')+'">'+t(a[1])+'</button>').join('')+'<button data-c="print">'+t('print')+'</button>'}
+function fillOpts(){opts($('fe'),t('exec'),uniq('executor'));opts($('fz'),t('zone'),[...new Set(T.map(zk))].sort());
+ sel($('fs'),t('status'),[...new Set([...ST,...uniq('status')])].map(s=>[s,stL(s)]));
+ sel($('fp'),t('prio'),[...PR.map(p=>[p,prL(p)]),['_','—']]);
+ opts($('fm'),t('mat'),uniq('materials_status'))}
+function greet(){const d=new Date(),h=d.getHours();let ds;try{ds=d.toLocaleDateString(L==='uz'?'uz-UZ':'ru-RU',{weekday:'long',day:'numeric',month:'long'})}catch(e){ds=today}
+ $('hi').innerHTML='<b>'+t(h<12?'gm':h<18?'gd':'ge')+'</b>'+esc(ds)}
+function ui(){document.documentElement.lang=L;document.title=t('title');$('h1').textContent=t('title');$('lang').textContent=L==='ru'?'UZ':'RU';greet();
+ $('t1').textContent=t('list');$('t2').textContent=t('supply');$('q').placeholder=t('search');$('sn').textContent=t('sn');$('cp').textContent=t('copy');$('foot').textContent=t('foot');
+ $('ms').textContent=t('save');$('mc').textContent=t('cancel');
+ fillOpts();
+ const sv=$('so').value||'id';$('so').innerHTML=[['id','sId'],['dl','sDl'],['pr','sPr'],['st','sSt']].map(a=>'<option value="'+a[0]+'">'+t('sort')+': '+t(a[1])+'</option>').join('');$('so').value=sv;
+ chips();renderSum();renderList();renderBuy()}
+// Перерисовка без потери раскрытых карточек и позиции прокрутки.
+function refresh(){const open=[...document.querySelectorAll('#list details[open]')].map(d=>d.dataset.id),y=scrollY;
+ fillOpts();renderSum();renderList();renderBuy();
+ document.querySelectorAll('#list details').forEach(d=>{if(open.includes(d.dataset.id))d.open=true});scrollTo(0,y)}
+let tt;function toast(m,undo){const el=$('toast');el.innerHTML='<span>'+esc(m)+'</span>'+(undo?'<button type="button" id="tu">'+t('undo')+'</button>':'');
+ if(undo)$('tu').onclick=()=>{undo();el.classList.remove('show')};el.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>el.classList.remove('show'),6000)}
+const snap=id=>ed[id]?{...ed[id]}:undefined;
+const restore=(id,s)=>()=>{if(s)ed[id]=s;else delete ed[id];save();refresh();pushEd(id)};
+function setSt(id,s){const prev=snap(id);setF(id,'status',s);refresh();if(s==='Выполнена')toast(id+' '+t('doneMsg'),restore(id,prev))}
+const EF=[['task','taskF','ta'],['floor_zone','floor'],['room','room'],['executor','exec'],['responsible','resp'],['category','cat'],['task_type','type'],['materials_status','mat'],['deadline','deadline','date'],['priority','prio','pr'],['status','status','st'],['purchase_required','purch','cb'],['purchase_item_or_action','item'],['comment','comm','ta']];
+function openEd(id){cur=id;const x=byId(id);$('mt').textContent=t('editT')+' '+id;
+ $('mf').innerHTML=EF.map(([f,lk,ty])=>{const v=get(x,f)??'',e='e_'+f;let inp;
+  if(ty==='ta')inp='<textarea id="'+e+'" rows="3">'+esc(v)+'</textarea>';
+  else if(ty==='pr')inp='<select id="'+e+'"><option value="">—</option>'+PR.map(p=>'<option value="'+p+'"'+(v===p?' selected':'')+'>'+esc(prL(p))+'</option>').join('')+'</select>';
+  else if(ty==='st')inp='<select id="'+e+'">'+[...new Set([...ST,v].filter(Boolean))].map(s=>'<option value="'+esc(s)+'"'+(v===s?' selected':'')+'>'+esc(stL(s))+'</option>').join('')+'</select>';
+  else if(ty==='cb')inp='<label class="cbx"><input type="checkbox" id="'+e+'"'+(String(v)==='True'?' checked':'')+'> '+t('buy')+'</label>';
+  else inp='<input id="'+e+'" type="'+(ty||'text')+'" value="'+esc(v)+'"'+(ty?'':' list="dl_'+f+'"')+'>'+(ty?'':'<datalist id="dl_'+f+'">'+uniq(f).map(a=>'<option value="'+esc(a)+'">').join('')+'</datalist>');
+  const lab=ty==='cb'?'<span class="lb">'+t(lk)+'</span>':'<label for="'+e+'">'+t(lk)+'</label>';
+  const r=isEd(id,f)?'<button type="button" class="rs" data-rf="'+f+'">↺ '+t('orig')+'</button>':'';
+  return '<div class="ff'+(ty==='ta'?' wide':'')+'">'+lab+inp+r+'</div>'}).join('');
+ $('dlg').showModal();$('e_task').focus()}
+$('mf').onclick=e=>{const b=e.target.closest('[data-rf]');if(!b)return;const f=b.dataset.rf,o=orig(cur,f)??'',el=$('e_'+f);if(el.type==='checkbox')el.checked=String(o)==='True';else el.value=o;b.remove()};
+$('ef').onsubmit=e=>{e.preventDefault();const x=byId(cur),prev=snap(cur),id=cur;
+ batch=true;EF.forEach(([f,,ty])=>{const el=$('e_'+f);let v=el.value;if(ty==='cb'){const o=String(x[f]??'');v=el.checked?'True':(o==='True'?'False':o)}setF(id,f,v)});batch=false;pushEd(id);
+ $('dlg').close();refresh();toast(t('saved'),restore(id,prev))};
+$('mc').onclick=()=>$('dlg').close();
+$('dlg').onclick=e=>{if(e.target===$('dlg'))$('dlg').close()};
+$('lang').onclick=()=>{L=L==='ru'?'uz':'ru';try{localStorage.setItem('lang',L)}catch(e){}ui()};
+$('th').onclick=()=>{const d=document.documentElement,dark=d.dataset.theme?d.dataset.theme==='dark':matchMedia('(prefers-color-scheme:dark)').matches;d.dataset.theme=dark?'light':'dark'};
+$('t1').onclick=()=>{$('v1').classList.remove('hid');$('v2').classList.add('hid');$('t1').classList.add('on');$('t2').classList.remove('on')};
+$('t2').onclick=()=>{$('v2').classList.remove('hid');$('v1').classList.add('hid');$('t2').classList.add('on');$('t1').classList.remove('on')};
+['q','fe','fz','fs','fp','fm','so'].forEach(i=>$(i).addEventListener(i==='q'?'input':'change',()=>{renderList();if(i==='fe')renderTeam()}));
+$('sum').onclick=e=>{const k=e.target.closest('[data-k]');if(!k)return;kf=kf===k.dataset.k?'':k.dataset.k;renderSum();renderList();$('t1').click()};
+$('chips').onclick=e=>{const c=e.target.dataset.c;if(c==='print'){window.print();return}if(c==='mine'&&!fl.mine&&$('fe').value){try{localStorage.setItem('me',JSON.stringify($('fe').value))}catch(_){}}if(c){fl[c]=!fl[c];chips();renderList()}};
+$('list').addEventListener('click',e=>{const el=e.target.closest('button');if(!el)return;const d=el.dataset;
+ if(d.done){e.preventDefault();const x=byId(d.done);if(get(x,'status')==='Выполнена')setSt(d.done,x.status!=='Выполнена'?x.status:'В работе');else setSt(d.done,'Выполнена');return}
+ if(d.pr!==undefined){const[id,p]=d.pr.split('|');setF(id,'priority',p);refresh();return}
+ if(d.st){const[id,s]=d.st.split('|');setSt(id,s);return}
+ if(d.edit){openEd(d.edit);return}
+ if(d.reset){const id=d.reset;if(!confirm(t('resetQ')))return;const prev=snap(id);delete ed[id];save();refresh();pushEd(id);toast(t('reset'),restore(id,prev))}});
+$('buy').addEventListener('change',e=>{const k=e.target.dataset.b;if(k===undefined)return;bought[k]=e.target.checked;try{localStorage.setItem('bought',JSON.stringify(bought))}catch(_){};renderBuy();push({bought:{[k]:e.target.checked}})});
+$('info').onclick=()=>$('foot').classList.toggle('show');
+$('cp').onclick=()=>{const b=$('cp');const ok=()=>{b.textContent=t('copied');setTimeout(()=>b.textContent=t('copy'),1500)};try{navigator.clipboard.writeText(window.BL).then(ok,()=>{})}catch(e){const a=document.createElement('textarea');a.value=window.BL;document.body.appendChild(a);a.select();document.execCommand('copy');a.remove();ok()}};
+// Голосовой ввод для новой задачи
+let recog;
+const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(/Mac/.test(navigator.userAgent)&&'ontouchend' in document);
+$('addTask').onclick=()=>$('newTaskDlg').showModal();
+$('ntCancel').onclick=()=>$('newTaskDlg').close();
+$('newTaskDlg').onclick=e=>{if(e.target===$('newTaskDlg'))$('newTaskDlg').close()};
+$('voiceBtn').onclick=()=>{
+ if(isIOS){$('taskInput').focus();$('voiceStatus').textContent='Нажмите 🎤 на клавиатуре';setTimeout(()=>$('voiceStatus').textContent='',4000);return}
+ if(!('webkitSpeechRecognition' in window||'SpeechRecognition' in window)){$('voiceStatus').textContent='⚠ Голосовой ввод недоступен';return}
+ if(!recog){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;recog=new SR();recog.lang='ru-RU';recog.continuous=false;recog.interimResults=false;
+  recog.onstart=()=>$('voiceStatus').textContent='🎤 Слушаю...';
+  recog.onresult=e=>{const txt=e.results[0][0].transcript;$('taskInput').value=txt;$('voiceStatus').textContent='✓ Распознано'};
+  recog.onerror=e=>$('voiceStatus').textContent='⚠ Ошибка: '+e.error;
+  recog.onend=()=>{if($('voiceStatus').textContent==='🎤 Слушаю...')$('voiceStatus').textContent=''}}
+ try{recog.start()}catch(e){$('voiceStatus').textContent='⚠ '+e.message}};
+$('ntf').onsubmit=e=>{e.preventDefault();const txt=$('taskInput').value.trim();if(!txt){alert('Введите описание задачи');return}
+ const nextId='D2-'+String(Math.max(0,...T.map(x=>+(/(\d+)$/.exec(x.task_id)||[0,0])[1]))+1).padStart(3,'0');const parsed=parseTaskInput(txt);
+ const newTask={task_id:nextId,object:'Дом 2',floor_zone:parsed.zone||'',room:parsed.room||'',category:parsed.category||'',task:parsed.task||txt,task_type:parsed.type||'',responsible:parsed.responsible||'',executor:parsed.executor||parsed.responsible||'',materials_status:parsed.materials||'',purchase_required:'False',purchase_item_or_action:'',status:'Новая',priority:parsed.priority||'',deadline:parsed.deadline||'',comment:'',pending:false,uz:{}};
+ T.push(newTask);if(online)push({nt:[newTask]});else{NT.push(newTask);saveNT()}refresh();$('newTaskDlg').close();$('taskInput').value='';$('voiceStatus').textContent='';toast('Задача '+nextId+' создана')};
+function parseTaskInput(txt){const t=txt.toLowerCase(),res={};
+ if(/высок/i.test(txt))res.priority='Высокий';else if(/средн/i.test(txt))res.priority='Средний';else if(/низк/i.test(txt))res.priority='Низкий';
+ const exm=/исполнитель\s+([а-яё]+)/i.exec(txt);if(exm)res.executor=exm[1].charAt(0).toUpperCase()+exm[1].slice(1);
+ const rpm=/ответственн[а-яё]*\s+([а-яё]+)/i.exec(txt);if(rpm)res.responsible=rpm[1].charAt(0).toUpperCase()+rpm[1].slice(1);
+ const zm=/(\d)\s*эт/i.exec(txt);if(zm)res.zone=zm[1]+' этаж';
+ const rm=/(прихож|гостин|кухн|санузел|спальн|ванн|коридор|кабинет|терраса|гараж|подвал|чердак)/i.exec(txt);if(rm){const rn={'прихож':'Прихожая','гостин':'Гостиная','кухн':'Кухня','санузел':'Санузел','спальн':'Спальня','ванн':'Ванная','коридор':'Коридор','кабинет':'Кабинет','терраса':'Терраса','гараж':'Гараж','подвал':'Подвал','чердак':'Чердак'};res.room=rn[rm[1].toLowerCase()]}
+ const dm=/(\d{1,2})\.(\d{1,2})\.?(\d{2,4})?/i.exec(txt);if(dm){const d=dm[1].padStart(2,'0'),m=dm[2].padStart(2,'0'),y=dm[3]?dm[3]:'2026';res.deadline=(y.length===2?'20'+y:y)+'-'+m+'-'+d}
+ const cat=/(зеркал|освещен|электр|сантехн|мебел|двер|окн|пол|потолок|стен|покрас|плитк|обои|кондиционер)/i.exec(txt);
+ if(cat){const cm={'зеркал':'Зеркала','освещен':'Освещение','электр':'Электрика','сантехн':'Сантехника','мебел':'Мебель','двер':'Двери','окн':'Окна','пол':'Полы','потолок':'Потолки','стен':'Стены','покрас':'Покраска','плитк':'Плитка','обои':'Обои','кондиционер':'Кондиционеры'};res.category=cm[cat[1].toLowerCase()]||cat[1]}
+ const ty=/(монтаж|установ|покрас|отделк|ремонт|замен|провер|наладк|чист|уборк)/i.exec(txt);
+ if(ty){const tm={'монтаж':'Монтаж','установ':'Установка','покрас':'Покраска','отделк':'Отделка','ремонт':'Ремонт','замен':'Замена','провер':'Проверка','наладк':'Наладка','чист':'Чистка','уборк':'Уборка'};res.type=tm[ty[1].toLowerCase()]||ty[1]}
+ res.task=txt.replace(/исполнитель\s+[а-яё]+/gi,'').replace(/ответственн[а-яё]*\s+[а-яё]+/gi,'').replace(/высок[а-яё]* приоритет/gi,'').replace(/средн[а-яё]* приоритет/gi,'').replace(/низк[а-яё]* приоритет/gi,'').replace(/(до|срок)?\s*\d{1,2}\.\d{1,2}\.?\d{0,4}/gi,'').replace(/\s*,(\s*,)+/g,',').replace(/[\s,.;]+$/,'').replace(/\s+/g,' ').trim();
+ return res}
+ui();pull();
+</script>
+</body>
+</html>
