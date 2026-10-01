@@ -1,0 +1,56 @@
+# Секреты и доступы
+secrets/
+*.netrc
+auth.json
+.env
+*.pem
+*.key
+id_rsa*
+known_hosts.ilya-core
+
+# Временные файлы и выводы команд
+evidence/
+steps/*.sh
+*.log
+*.tmp
+C:/Temp/
+
+# Бэкапы
+*.bak
+*.bak-*
+*.orig
+
+# Архивы и атики
+archive/
+attic/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+ENV/
+
+# Node
+node_modules/
+package-lock.json
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Специфика проекта
+SERVER-SNAPSHOT.json
+/dom2/
+/src/
+run-step*.cmd

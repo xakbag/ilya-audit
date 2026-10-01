@@ -1,0 +1,65 @@
+# HANDOFF — ILYA CORE (не больше 60 строк)
+
+> «Продолжай» = прочитай CLAUDE.md и этот файл и выполни «Следующее действие». Подробности: `AUDIT-REPORT.md`, `evidence/`.
+
+**Обновлено:** 01.10.2026 — ФОКУС: дизайн и функционал Дома 2 (`C:\Ilya-audit\house2`). reg.ru выполнено. СЕРВЕР СТОП до команды Ильи: мост QA #6b, rates.py, #7, smart-quality30, Git, monitor/DNS НЕ предлагать.
+**Gateway (01.10):** инструкция `GATEWAY-RESUME.md`; архив `archive/gateway-handoff-20261001.zip` (без secrets/, ключей, settings.json).
+**Доска (30.09 21:20):** `https://desktop-i53h0d8.taile433c9.ts.net/ai-map/monitor/` (Funnel on, без сессии → 303 /login; /healthz 200). Публичный monitor.ai-ilya.ru ждёт действий владельца (п.1).
+## Следующее действие (Дом 2)
+1. [СДЕЛАНО 01.10] Фильтр #fp: стр.233 слушает `input`+`change`. Превью `dom2` (8765) НЕ запускать без разрешения Ильи (отклонил запуск) — проверка фильтра в браузере не сделана.
+2. [СДЕЛАНО 01.10] build.py → «58 58»; data.js вклеен в `deploy/index.html` и `site/house2-single.html` (61234 байт, файлы идентичны); `node --check` OK.
+3. C:/Temp/app.js, C:/Temp/jd НЕ удалены (классификатор блокирует) — удаляет Илья сам или даёт явное разрешение. deploy/index.html выкладывает Илья.
+4. [СДЕЛАНО 01.10 вечер] Редизайн по Flux (бэкап `*.bak-20261001b`): gauge из 3 цветных сегментов (готово/в работе/новые) + легенда; KPI с бейджем % и мини-столбиками по зонам; новый ряд: «Прогресс по зонам» (сегментная полоса, клетка = задача) и таблица «Исполнители» (задач/готово/статус-pill, клик = фильтр). Собрано, вклеено, node --check OK, рендер в node: 58 карточек, 8 зон, 21 исполнитель. В браузере НЕ смотрел (превью только с разрешения).
+5. РЕЖИМ ДИКТОВКИ (с 01.10): Илья диктует правки → я сразу вношу. Задачи (текст, исполнитель, приоритет, статус, срок…) правлю в `registry.csv` (`;`, utf-8-sig, бэкап `registry.csv.bak-20261001`), дизайн/кнопки — в `site/index.html`. После каждой пачки: build.py → вклейка data.js в deploy/index.html и site/house2-single.html → node --check → коротко что изменено. Превью только с разрешения.
+6. [СДЕЛАНО 01.10 вечер] Голосовой ввод задач: кнопка «➕ Поставить задачу» в header → dialog#newTaskDlg с textarea + кнопка «🎤 Голосовой ввод» (Web Speech API, ru-RU) → parseTaskInput() распознаёт исполнителя, приоритет, зону, комнату, срок, категорию → создаётся задача D2-059+ в массив T. Бэкап index.html.bak-voice. Собрано, node --check OK. В браузере НЕ проверено (превью только с разрешения).
+## АРХИВ (сервер, СТОП — не предлагать)
+1. **Доска на reg.ru — ждёт «да» владельца.** Готово локально: `steps/step70-publish-deploy.sh` (таймер не включает без netrc, откат в конце). [01.10 WHOIS] ai-ilya.ru делегирован на ns1/ns2.reg.ru → зона ai-ilya.ru правится в **панели домена reg.ru** (Домены → ai-ilya.ru → DNS), а не в ispmanager (там зоны только dom2.ai-ilya.ru, granitline.ru, kub-lesa.ru). Нужно: (а) сайт monitor.ai-ilya.ru в ispmanager, корень `/www/monitor.ai-ilya.ru` (откат — удалить сайт); (б) A `monitor` → 37.140.192.183 в панели домена (откат — удалить запись); (в) владелец кладёт `/etc/smart-monitor-publish.netrc` (600); (г) загрузка index.html+monitor.js; (д) step70; (е) сброс паролей хостинга; (ж) пополнить баланс до 18.10.
+   Доска публично на reg.ru (ai-ilya.ru):** решение владельца — открыта всем, хостинг reg.ru. Узнать тип тарифа (ISPmanager/cPanel) и протокол (SFTP/SSH/FTP). Схема: статика на хостинге, сервер раз в минуту заливает status.json без ПДн/текстов чатов; реквизиты владелец кладёт сам в файл 600, я его не читаю. Классификатор блокирует деплой из моих команд — запуск steps делает владелец.
+2. **Мост QA→исполнитель — план #6b готов, ждёт «да».** Факты (step73/74): задача `qa-substantive-review` в реестре есть (enabled, substantive_error), исполнитель 8780 на FreeLLMAPI работает; не хватает только диспетчера. После «да»: написать `qa-outbox-dispatcher.py` (POST /v1/events → GET-опрос → outbox.state sent/reviewed, busy_timeout 5000), пилот на 1 событии (`evt-inc-9cfab38f9eb1f0a2`), затем 2 остальных, затем таймер 5 мин. `continuous_quality.py` не трогаем. Откат — в плане. P2: токен исполнителя продублирован в `Environment=` юнита.
+3. Затем `rates.py` (таблица ставок), #7 контроллер, `smart-quality30` start-limit-hit, Git для конфигурации.
+## Техника
+- Шаг: `steps/<name>.sh` → `.\tools\run-step.ps1 -Step <name> -Task "..."` → `evidence/<name>-<дата>.txt` (без ПДн). Шаблон: `set -u; main(){...}; main </dev/null; exit 0`.
+- Разовая команда: `python "C:/Users/Илья Работа/Documents/Codex/2026-09-29/new-chat/outputs/remote-server.py" --command "..."`. Прямой `ssh/scp/sftp` тоже разрешён владельцем (30.09).
+- sqlite3 на сервере нет → `python3` с `?mode=ro`. Windows-python: `PYTHONUTF8=1`. HANDOFF читать с `-Encoding UTF8`.
+- FreeLLMAPI по максимуму (`fl.ps1`, `fl-code.ps1`: код, выжимки, разбор выводов; только очищенные данные), результат проверять самому. Владельцу команд не давать.
+## Решения владельца
+- Сделано: Funnel (риск принят), `.wslconfig` 20GB+gradual, restic 04:45 → `C:\Backups\ilya-core`, восстановление 29/29 и 56/56.
+- #6: «да» на правку исполнителя/реестра и `enable --now`. Мост outbox→исполнитель (запись в quality.sqlite) — отдельное «да».
+- #7: «да» на идею. HEAVY 23:00–10:00 с защитой по RAM (8192/7168/6144 МиБ), без датчика присутствия; Ctrl+Alt+M = LIGHT на 3 ч с выгрузкой VRAM, Ctrl+Alt+N = авто; файл запроса в `C:\ProgramData\SmartServer\ModelController\`; `mode_reason`+TTL в `/health`. Нужен план с .bak → «да».
+## Доска мониторинга (факты)
+- Готово локально: `dashboard/index.html`, `monitor.js` (вынесен из-за CSP `script-src 'self'`), `collector.py` v2.1 (9 карточек: core, gateway, controller, qa, executor, backup, memory, chat, db; без текстов чатов).
+- ai-map: Flask/gunicorn 8766, юнит `smart-map` (User smart-map, ReadWritePaths=/var/lib/ilya-map), корень `/srv/smart-server/ai-map/current` → `releases/20260927-193309`. `protect()` пускает без сессии только `/login`, `/healthz`, `/api/mobile/*`, `/mobile*`.
+- Правка `server/app.py` (маршруты `/monitor/`, `/monitor/<monitor.js|status.json>`): `infra/srv/.../server/app.py`, оригинал `app.orig.py`. Патч-блок step61 проверен на копии: py_compile ок, отличие от app.py — одна пустая строка.
+- step61: base64-доставка файлов, `.bak-$TS`, py_compile с автооткатом, chown smart-map, `smart-monitor-collector.service` (oneshot, root, Nice=10) + `.timer` 60 с. Коллектор от root, т.к. `tasks.sqlite` и `core/data` читают только smart-core/root. Статика и status.json: `/var/lib/ilya-map/monitor/`.
+- Откат: `systemctl disable --now smart-monitor-collector.timer; rm /etc/systemd/system/smart-monitor-collector.*; cp -p app.py.bak-$TS app.py; daemon-reload; restart smart-map`.
+- Проверка после деплоя: `/monitor/` без сессии → 303 на /login; с сессией — 200 и свежий status.json.
+## Прочее
+- Сайт Дом 2 (01.10): живой https://dom2.ai-ilya.online/ (выкладывает владелец, публикацией/DNS НЕ заниматься). Задача владельца: дизайн+функционал — «редактирование задач, потом приоритеты, кнопка Выполнено». Референс видео Downloads/18433340410572.mp4 (светлый glass, KPI, gauge, pills). Сделано в `house2/site/index.html` (бэкап index.html.bak-20261001): модалка правки dialog#dlg (14 полей, сброс data-rf), pill приоритета data-pr, фильтр #fp, кнопка .dn «✓ Выполнено», KPI, gauge, toast с undo. Правки в localStorage `ed`. В превью проверено: Выполнено, правка, pills — работают.
+- Дом 2 СЛЕДУЮЩЕЕ: (1) проверить фильтр #fp — при приоритете из `ed` показал 0 карточек (возможно сравнивает сырой t.priority, а не get()/слитое значение; или тест был кривой) → исправить; (2) сборка: `cd house2 && python site/build.py` («58 58»), вклеить data.js вместо `<script src="data.js">` в deploy/index.html и site/house2-single.html, node --check скрипта; (3) превью: launch.json «dom2» порт 8765; (4) удалить C:/Temp/app.js, C:/Temp/jd; (5) коротко отчитаться владельцу — он выкладывает deploy/index.html. Python: пути C:/Temp, не /tmp; npm install не делать.
+- Инциденты супервизора: 3 шт. resolved (evidence/step72-...-1115.txt), действий не нужно.
+## Задача №6 (исполнитель QA) — состояние 30.09 20:57
+- Исполнитель: `/srv/smart-server/assignment-supervisor/codex_event_executor.py`, порт 8780, backend=freellmapi, локальная копия `src/executor/`. Каталог `workspaces/qa-substantive-review` создан владельцем. Outbox `quality.sqlite`: 3 события `pending_no_supported_executor` (метку ставит QA → нужен мост).
+- Причина invalid_freellm_result: конверт `{"answer":"...","model":...}` от FreeLLMAPI. Исправление в freellm_backend.py (extract_json разворачивает answer), 12 тестов OK, деплой 20:55 (бэкап .bak-20260930-2055, откат = cp + restart, только с «да»).
+- ФАКТ: audit-test-4 (20:56:39 МСК) accepted → started → completed, 1 попытка, invalid в журнале нет (evidence/step66-...-2057.txt). Исполнитель через FreeLLMAPI работает end-to-end.
+- Дальше: см. «Следующее действие» п.2 (план #6b).
+## 2026-09-30 reg.ru — факты хостинга (кабинет, вкладка Управление)
+- Host-0, ispmanager, server96.hosting.reg.ru / 37.140.192.183, логин u3660047; SFTP/SSH/FTP есть. Сайтов 3 из 7: dom2.ai-ilya.ru, granitline.ru, kub-lesa.ru. Место 0.2 из 13 ГБ.
+- ai-ilya.ru (NS reg.ru) сам не подключён, но поддомен dom2.ai-ilya.ru уже работает на этом хостинге -> под доску взять новый поддомен (напр. monitor.ai-ilya.ru): «Добавить сайт» + A-запись на 37.140.192.183.
+- Оплачен до 25.10.2026; автопродление 18.10 не сработает (баланс 0, карты нет).
+- ВНИМАНИЕ: пароли хостинга дважды попали в контекст (вкладка «Доступы») -> владельцу сбросить. Вкладку «Доступы» не читать.
+- Дальше: public status.json без ПДн, статика, публикатор SFTP + timer, реквизиты в файле 600 от владельца.
+## 2026-09-30 21:10 — публикация доски (подготовка)
+- SSH-блокер снят обходом: remote-server.py работает. На сервере есть curl с sftp.
+- status.json проверен: карточки memory/chat/db без ПДн (только счётчики, состояния).
+- Готово локально: infra/publish/monitor-publish.sh (валидатор ключей+PII-regex, curl sftp, netrc 600), .service, .timer. Не задеплоено.
+- Нужно от владельца: создать monitor.ai-ilya.ru + A 37.140.192.183; положить /etc/smart-monitor-publish.netrc (machine/login/password, 600); сбросить пароли хостинга; уточнить REMOTE_DIR; «да» на деплой. Также положить на хостинг index.html/monitor.js (статика, fetch status.json).
+- 30.09 проверено: `dashboard/monitor.js` берёт относительный `status.json` (cache-bust), `index.html` подключает `monitor.js` → на хостинг кладутся как есть, правок не нужно. .service (oneshot, Nice=10) и .timer (60 с) готовы.
+- 01.10 11:20: Chrome-вкладка ispmanager (DNS) открыта; ничего не создано. Ждём «да» на (а)+(б) из п.1.
+## 2026-09-30 — скиллы и конституция
+- .claude/skills/: ssh-readonly-audit, evidence-sanitizer, handoff-update, hypothesis-check; остальные скиллы для аудита не нужны.
+- Скиллы (30.09, «да» владельца): find-skills (.agents + skills-lock.json) перенесён в archive/removed-2026-09-30/ (откат: вернуть обратно). superpowers — встроенный плагин приложения/аккаунта, локально не отключается (нет в ~/.claude и ListPlugins); выключить может только владелец в настройках плагинов Claude. data:/design:/exa: не авторизованы, не нужны.
+- CONSTITUTION.md переработана (8 разделов): запреты списком, ПДн не во внешние LLM, среда с семьёй/режимы, причина blocked, доступ только через remote-server.py/run-step.ps1. Приоритет у CLAUDE.md.
+- 30.09: владелец разрешил читать пароли/логины/токены, если задача требует (CLAUDE.md §1, CONSTITUTION §2.3): минимум, без вывода/сохранения/отправки во внешние LLM. Также разрешено: агент сам использует `ssh/scp/sftp`, если нужно для задачи (приватный ключ не открывать/не печатать). FreeLLMAPI использовать по максимуму (очищенные данные). Запрещены: cookies мессенджеров, ввод паролей в формы, изменения на сервере без «да».
+- Дальше: п.2 (после «да» — диспетчер и пилот) или п.1 (после действий владельца). Пора начать новый сеанс: «Продолжай».
+- 01.10 ai-funpay: переменная User ANTHROPIC_BASE_URL=https://www.ai-funpay.ru задана (откат: [Environment]::SetEnvironmentVariable('ANTHROPIC_BASE_URL',$null,'User')). ФАКТ: после перезапуска процесс сеанса всё равно видит api.anthropic.com -> приложение переопределяет; десктоп идёт НЕ через ai-funpay. Рабочий путь: claude из терминала.
+- 01.10: десктоп читает шлюз из Developer > Configure Third-Party Inference (Help>Troubleshooting>Enable Developer Mode), не из env/settings. Владелец включает сам; не проверено, доступно ли на Pro и подходит ли ai-funpay. haiku=auto:free-agents сломан, починить с бэкапом.
