@@ -68,3 +68,7 @@ house2/build/
 house2/*.xlsx
 
 .claude/settings.local.json
+
+# Исполнитель на API (tools/claude-worker.cmd)
+worker-logs/
+worker-tasks/
