@@ -67,6 +67,7 @@ $log   = Join-Path $logDir "$stamp.md"
 
 Write-Host "Исполнитель: $model, лимит `$$budget, папка $Root" -ForegroundColor Cyan
 Push-Location $Root
+$ErrorActionPreference = 'Continue'   # stderr claude не должен обрывать скрипт
 try {
     $raw = $task | & claude -p --output-format json --model $model --max-budget-usd $budget `
         --permission-mode acceptEdits --allowedTools @allowed `
