@@ -40,4 +40,4 @@
 - Шаг: `steps/<имя>.sh` → `.	oolsun-step.ps1 -Step <имя> -Task "..."` → `evidence/`. Шаблон `set -u; main(){...}; main </dev/null; exit 0`. sqlite3 на сервере нет → python3 `?mode=ro`. Windows-python: `PYTHONUTF8=1`.
 - FreeLLMAPI: `fl.ps1`, `fl-code.ps1` (шлюз на ПК :31415 бывает недоступен). Только очищенные данные.
 - Windows сервера: .wslconfig `memory=20GB`(→14), `autoMemoryReclaim=gradual`; задачи Планировщика SmartServer-WSL-Boot/KeepAlive/Model-Presence есть. Свободно Windows ~4 ГБ при пороге HEAVY 8 ГБ (B4: ночью HEAVY было 0,2 %).
-- Дом 2: правки по диктовке в `house2/registry.csv` → `site/build.py` → вклейка в `deploy/index.html` и `site/house2-single.html` → `node --check`; код правок = WRITE_KEY в `deploy/api.php` (в чат не выносить).
+- Дом 2: правки по диктовке в `house2/registry.csv` → `site/build.py` → вклейка в `deploy/index.html` и `site/house2-single.html` → `node --check`. 02.10: закрытие dialog по фону через `bdClose()` (не закрывается при выделении), тест `node house2/tests/dialog-backdrop.mjs <html>` — 60/60 PASS; HTML не закоммичен (общие правки с агентом голоса). Код правок = WRITE_KEY в `deploy/api.php` (в чат не выносить).
