@@ -61,6 +61,7 @@ button.on{background:var(--ac);color:var(--onac);border-color:var(--ac)}
 .pp.p-high:not(.on){color:var(--hi)}.pp.p-mid:not(.on){color:var(--mid)}.pp.p-low:not(.on){color:var(--low)}
 .acts{display:flex;flex-wrap:wrap;gap:8px}.acts button{min-height:40px}
 .note{font-size:12px;color:var(--mut);margin:6px 0}
+.ml{display:flex;flex-direction:column;gap:6px;margin-top:4px}.mr{display:flex;gap:6px;align-items:center}.mr .mn{flex:1;min-width:0}.mr select{font-size:13px;padding:4px 6px}.mr .mx{padding:4px 9px}.mr.s1 .mn{color:var(--warn)}.mr.s2 .mn{color:var(--ok)}.ma2{display:flex;gap:6px;margin-top:6px}.ma2 input{flex:1;min-width:0}
 .note.pend{background:#fff3c4;color:#5c4400;border:1px solid #e6c34a;border-radius:12px;padding:6px 10px;font-size:13px}
 .gh{display:flex;justify-content:space-between;align-items:baseline;margin:22px 4px 4px;font-weight:600;font-size:16px}
 .gh span{color:var(--mut);font-size:13px;font-weight:400}
@@ -135,7 +136,7 @@ tr.sel td{background:rgba(246,201,69,.18)}
 <button class="info" id="info" aria-label="i">i</button><p class="note" id="foot"></p>
 </div>
 <dialog id="dlg"><form id="ef"><h2 id="mt"></h2><div class="mf" id="mf"></div><div class="ma"><button type="button" id="mc"></button><button type="submit" id="ms" class="pri"></button></div></form></dialog>
-<dialog id="newTaskDlg"><form id="ntf"><h2>Новая задача</h2><div class="mf" style="grid-template-columns:1fr"><div class="ff"><label>Опишите задачу текстом или голосом</label><textarea id="taskInput" rows="5" placeholder="Например: Смонтировать зеркала в прихожей первого этажа, исполнитель Сергей, высокий приоритет"></textarea><div style="display:flex;gap:8px;margin-top:6px"><button type="button" id="voiceBtn" style="background:var(--ac);color:var(--onac);border-color:var(--ac)">🎤 Голосовой ввод</button><span id="voiceStatus" style="font-size:12px;color:var(--mut);align-self:center"></span></div></div></div><div class="ma"><button type="button" id="ntCancel">Отмена</button><button type="submit" class="pri">Создать задачу</button></div></form></dialog>
+<dialog id="newTaskDlg"><form id="ntf"><h2>Новая задача</h2><div class="mf" style="grid-template-columns:1fr"><div class="ff"><label>Опишите задачу текстом или голосом</label><textarea id="taskInput" rows="5" placeholder="Например: Смонтировать зеркала в прихожей первого этажа, исполнитель Сергей, высокий приоритет"></textarea><div style="display:flex;gap:8px;margin-top:6px"><button type="button" id="voiceBtn" style="background:var(--ac);color:var(--onac);border-color:var(--ac)">🎤 Голосовой ввод</button><span id="voiceStatus" style="font-size:12px;color:var(--mut);align-self:center"></span></div></div></div><div id="aiPrev" class="hid" style="padding:0 20px"><div id="aiHead" style="font-size:13px;margin:4px 0 8px"></div><div class="mf" style="padding:0"><div class="ff" style="grid-column:1/-1"><label>Задача</label><input id="ap_task" maxlength="300"></div><div class="ff"><label>Исполнитель</label><select id="ap_executor"></select></div><div class="ff"><label>Приоритет</label><select id="ap_priority"></select></div><div class="ff"><label>Этаж</label><select id="ap_zone"></select></div><div class="ff"><label>Комната</label><input id="ap_room" maxlength="60"></div><div class="ff"><label>Срок</label><input id="ap_deadline" type="date"></div><div class="ff"><label>Категория</label><input id="ap_category" maxlength="60"></div><div class="ff" style="grid-column:1/-1"><label>Материалы (по одному в строке)</label><textarea id="ap_mats" rows="2"></textarea></div></div></div><div class="ma"><button type="button" id="ntCancel">Отмена</button><button type="button" id="aiFix" class="hid">✎ Поправить текст</button><button type="submit" class="pri" id="ntGo">Разобрать</button></div></form></dialog>
 <div id="toast" role="status" aria-live="polite"></div>
 <script src="data.js"></script>
 <script>
@@ -146,8 +147,8 @@ uz:{title:'Ishlar jurnali — Uy 2',f_mine:'Meniki',print:'Chop etish',all:'Hamm
 // Значения поля «Статус/материалы» на узбекском — только из листа переводов; остальные поля (имена, ID, числа, единицы) не переводятся.
 const T=window.TASKS;
 Object.assign(I.ru,{byZone:'Прогресс по зонам',team:'Исполнители',tasksN:'Задач',ready:'Готово',notSt:'Не начато',lateS:'Просрочка',ofAll:'от всех',tapEx:'нажмите — покажу задачи',allEx:'Все исполнители'});
-Object.assign(I.ru,{roMsg:'Только просмотр: правка доступна по ссылке с ключом',syncErr:'Нет связи с сервером — правка не сохранена'});
-Object.assign(I.uz,{roMsg:'Faqat ko‘rish: tahrirlash kalitli havola orqali',syncErr:'Server bilan aloqa yo‘q — saqlanmadi'});
+Object.assign(I.ru,{f_arch:'Архив',matT:'Материалы',noMat:'Материалы не указаны',addMat:'Добавить',matPh:'Название материала',roMsg:'Только просмотр: без кода правки не сохраняются',syncErr:'Нет связи с сервером — правка не сохранена'});
+Object.assign(I.uz,{f_arch:'Arxiv',matT:'Materiallar',noMat:'Materiallar ko‘rsatilmagan',addMat:'Qo‘shish',matPh:'Material nomi',roMsg:'Faqat ko‘rish: tahrirlash kalitli havola orqali',syncErr:'Server bilan aloqa yo‘q — saqlanmadi'});
 Object.assign(I.uz,{byZone:'Hududlar bo‘yicha',team:'Ijrochilar',tasksN:'Vazifa',ready:'Tayyor',notSt:'Boshlanmagan',lateS:'Muddati o‘tgan',ofAll:'jamidan',tapEx:'bosing — vazifalarni ko‘rsataman',allEx:'Barcha ijrochilar'});let L=(()=>{try{return localStorage.getItem('lang')}catch(e){}})()||'ru',fl={},kf='',cur=null;
 const S=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}};
 let ed=S('ed',{}),bought=S('bought',{});
@@ -166,12 +167,14 @@ async function pull(){if(location.protocol==='file:')return;try{const r=await fe
   // первый запуск: сервер пуст, а в этом браузере уже есть правки — переносим их на сервер
   if(WK&&!st.v&&(Object.keys(le).length||Object.keys(lb).length)){await push({ed:le,bought:lb})}refresh();
   if(WK&&NT.length){const n=NT.splice(0);saveNT();push({nt:n})}}catch(_){}}
-async function push(patch){if(!online)return;if(!WK){toast(t('roMsg'));pull();return}
+let noAsk=false;
+function askKey(msg){if(noAsk)return false;let k='';try{k=(prompt(msg||'Код для правок (вводится один раз на этом устройстве):')||'').trim()}catch(_){}if(k){WK=k;try{localStorage.setItem('wk',k)}catch(_){}}else noAsk=true;return!!k}
+async function push(patch,retry){if(!online)return;if(!WK&&!askKey()){toast(t('roMsg'));pull();return}
  try{const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json','X-Key':WK},body:JSON.stringify(patch)});
-  if(r.status===403){WK='';try{localStorage.removeItem('wk')}catch(_){}toast(t('roMsg'));pull();return}
+  if(r.status===403){WK='';try{localStorage.removeItem('wk')}catch(_){}if(!retry&&askKey('Код не подошёл. Введите код для правок ещё раз:'))return push(patch,1);toast(t('roMsg'));pull();return}
   if(!r.ok)throw 0;applyState(await r.json());refresh()}catch(_){toast(t('syncErr'))}}
 const pushEd=id=>push({ed:{[id]:ed[id]||null}});
-setInterval(()=>{if(!document.hidden&&!$('dlg').open&&!$('newTaskDlg').open)pull()},30000);
+setInterval(()=>{if(!document.hidden&&!(document.activeElement&&document.activeElement.dataset&&document.activeElement.dataset.mi!==undefined)&&!$('dlg').open&&!$('newTaskDlg').open)pull()},30000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)pull()});
 
 const $=id=>document.getElementById(id),t=k=>I[L][k]??I.ru[k]??k;
@@ -190,6 +193,11 @@ const dl=x=>get(x,'deadline')||'';
 const late=x=>dl(x)&&dl(x)<today&&get(x,'status')!=='Выполнена';
 const isQ=x=>/уточн|вопрос|\?/i.test(get(x,'materials_status')+' '+get(x,'comment'));
 const buy=x=>String(get(x,'purchase_required'))==='True';
+const MS=['Нужно выбрать','Заказано','Куплено'];
+function mats(x){const v=get(x,'mats');if(v!==undefined&&v!==null&&v!=='')return v==='-'?[]:String(v).split('\n').map(l=>{const i=l.lastIndexOf('|'),n=i<0?l:l.slice(0,i),st=i<0?'':l.slice(i+1);return{n:n.trim(),s:MS.includes(st)?st:MS[0]}}).filter(m=>m.n);
+ const k=get(x,'purchase_item_or_action');return buy(x)&&k?[{n:k,s:bought[k]?'Куплено':MS[0]}]:[]}
+function setMats(id,a){setF(id,'mats',a.length?a.map(m=>m.n.replace(/[|\n]/g,' ')+'|'+m.s).join('\n'):'-');refresh()}
+const msL=s=>({'Нужно выбрать':t('msPick')||s}[s]||s);
 const PR=['Высокий','Средний','Низкий'],ST=['Новая','В работе','Выполнена'];
 const pr={'Высокий':0,'Средний':1,'Низкий':2},so={'В работе':0,'Новая':1,'Выполнена':2};
 const pcls={'Высокий':'p-high','Средний':'p-mid','Низкий':'p-low'};
@@ -201,11 +209,12 @@ const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&g
 function sel(el,label,pairs){const v=el.value;el.innerHTML='<option value="">'+esc(label)+': '+t('all')+'</option>'+pairs.map(([a,b])=>'<option value="'+esc(a)+'">'+esc(b)+'</option>').join('');el.value=v}
 const opts=(el,label,vals)=>sel(el,label,vals.map(a=>[a,a]));
 const zk=x=>get(x,'floor_zone')+' · '+get(x,'room');
+const FO=['1 этаж','2 этаж','Улица'],fz=x=>get(x,'floor_zone')||'—',fsort=(p,r)=>((FO.indexOf(p)+1||9)-(FO.indexOf(r)+1||9))||p.localeCompare(r);
 function filt(){const q=$('q').value.toLowerCase(),fp=$('fp').value;
- let a=T.filter(x=>(!$('fe').value||get(x,'executor')===$('fe').value)&&(!$('fz').value||zk(x)===$('fz').value)&&(!$('fs').value||get(x,'status')===$('fs').value)&&(!$('fm').value||get(x,'materials_status')===$('fm').value)
- &&(!fp||(fp==='_'?!get(x,'priority'):get(x,'priority')===fp))&&(!kf||KF[kf](x))
+ let a=T.filter(x=>(!$('fe').value||get(x,'executor')===$('fe').value)&&(!$('fz').value||fz(x)===$('fz').value)&&(!$('fs').value||get(x,'status')===$('fs').value)&&(!$('fm').value||get(x,'materials_status')===$('fm').value)
+ &&(!fp||(fp==='_'?!get(x,'priority'):get(x,'priority')===fp))&&(!kf||KF[kf](x))&&(fl.arch?isDn(x):(!isDn(x)||$('fs').value==='Выполнена'||kf==='done'))
  &&(!fl.mine||get(x,'executor')===S('me',''))&&(!fl.buy||buy(x))&&(!fl.q||isQ(x))&&(!fl.late||late(x))
- &&(!q||[x.task_id,get(x,'task'),get(x,'executor'),get(x,'responsible'),get(x,'materials_status'),get(x,'purchase_item_or_action'),get(x,'room'),get(x,'category'),get(x,'comment'),x.uz.work,x.uz.zone].join(' ').toLowerCase().includes(q)));
+ &&(!q||[x.task_id,get(x,'task'),get(x,'executor'),get(x,'responsible'),get(x,'materials_status'),get(x,'purchase_item_or_action'),mats(x).map(m=>m.n).join(' '),get(x,'room'),get(x,'category'),get(x,'comment'),x.uz.work,x.uz.zone].join(' ').toLowerCase().includes(q)));
  const s=$('so').value,id=(p,r)=>p.task_id.localeCompare(r.task_id,undefined,{numeric:true});
  a.sort((p,r)=>(s==='dl'?(dl(p)||'9').localeCompare(dl(r)||'9'):s==='pr'?(pr[get(p,'priority')]??9)-(pr[get(r,'priority')]??9):s==='st'?(so[get(p,'status')]??9)-(so[get(r,'status')]??9):0)||id(p,r));
  return a}
@@ -215,7 +224,7 @@ function card(x){const id=x.task_id,pv=get(x,'priority')||'',stt=get(x,'status')
  if(buy(x))b.push('<span class="b buy">'+t('f_buy')+'</span>');if(isQ(x))b.push('<span class="b q">'+t('f_q')+'</span>');if(late(x))b.push('<span class="b late">'+t('f_late')+'</span>');
  if(isEd(id))b.push('<span class="b ed">✎ '+t('edited')+'</span>');
  const cl=['c','g',pcls[pv]||'',isD?'s-done':'',late(x)?'s-late':''].join(' ');
- const zone=L==='uz'&&x.uz.zone&&!isEd(id,'floor_zone')&&!isEd(id,'room')?x.uz.zone:zk(x);
+ const zone=L==='uz'&&x.uz.zone&&!isEd(id,'floor_zone')&&!isEd(id,'room')?x.uz.zone:(get(x,'room')||zk(x));
  const pill=(attr,v,on,cls,lab)=>'<button type="button" class="pp '+cls+(on?' on':'')+'" '+attr+'="'+id+'|'+esc(v)+'" aria-pressed="'+on+'">'+lab+'</button>';
  return '<details class="'+cl+'" data-id="'+id+'"><summary><span class="id">'+id+'</span><span class="t">'+esc(tx(x,'task','work'))+'</span><span class="z">'+esc(zone)+'</span><span class="bs">'+b.join('')+'</span>'
  +'<button type="button" class="dn'+(isD?' on':'')+'" data-done="'+id+'" aria-pressed="'+isD+'">✓ '+t('markDone')+'</button></summary><div class="bd">'
@@ -225,20 +234,20 @@ function card(x){const id=x.task_id,pv=get(x,'priority')||'',stt=get(x,'status')
  +'<div><dt>'+t('cat')+'</dt><dd>'+esc(get(x,'category'))+'</dd></div>'
  +'<div><dt>'+t('type')+'</dt><dd>'+esc(get(x,'task_type'))+'</dd></div>'
  +'<div><dt>'+t('mat')+'</dt><dd>'+esc(tx(x,'materials_status','materials'))+'</dd></div>'
- +'<div><dt>'+t('purch')+'</dt><dd>'+(buy(x)?esc(get(x,'purchase_item_or_action')):'—')+'</dd></div>'
  +'<div><dt>'+t('deadline')+'</dt><dd>'+esc(dl(x)||t('none'))+'</dd></div>'
  +'<div class="wide"><dt>'+t('comm')+'</dt><dd>'+esc(get(x,'comment')||'—')+'</dd></div></dl>'
+ +'<div class="wide"><dt>'+t('matT')+'</dt><div class="ml">'+(mats(x).length?mats(x).map((m,i)=>'<div class="mr s'+MS.indexOf(m.s)+'"><span class="mn">'+esc(m.n)+'</span><select data-ms="'+id+'|'+i+'">'+MS.map(o=>'<option'+(o===m.s?' selected':'')+'>'+o+'</option>').join('')+'</select><button type="button" class="mx" data-mdel="'+id+'|'+i+'" aria-label="Удалить">✕</button></div>').join(''):'<span class="note">'+t('noMat')+'</span>')+'</div><div class="ma2"><input data-mi="'+id+'" placeholder="'+esc(t('matPh'))+'"><button type="button" data-madd="'+id+'">+ '+t('addMat')+'</button></div></div>'
  +'<div class="wide"><dt>'+t('prio')+'</dt><div class="pills">'+['',...PR].map(p=>pill('data-pr',p,pv===p,pcls[p]||'',p?esc(prL(p)):'—')).join('')+'</div></div>'
  +'<div class="wide"><dt>'+t('status')+'</dt><div class="pills">'+ST.map(s=>pill('data-st',s,stt===s,'',esc(stL(s)))).join('')+'</div></div>'
  +(x.pending?'<div class="wide note pend">⚠ '+t('pend')+'</div>':'')
  +'<div class="wide acts"><button type="button" data-edit="'+id+'">✎ '+t('edit')+'</button>'+(isEd(id)?'<button type="button" data-reset="'+id+'">↺ '+t('resetAll')+'</button>':'')+'</div>'
  +'</div></details>'}
-function renderList(){const a=filt();const g={};a.forEach(x=>{const k=zk(x);(g[k]=g[k]||[]).push(x)});
+function renderList(){const a=filt();const g={};a.forEach(x=>{const k=fz(x);(g[k]=g[k]||[]).push(x)});
  const isD=x=>get(x,'status')==='Выполнена';
- $('list').innerHTML='<p class="note">'+t('shown')+' '+a.length+' '+t('ofN')+' '+T.length+'</p>'+Object.keys(g).sort().map(k=>'<div class="gh">'+esc(k)+'<span>'+g[k].filter(isD).length+' '+t('ofN')+' '+g[k].length+' '+t('doneN')+'</span></div>'+g[k].map(card).join('')).join('')}
+ $('list').innerHTML='<p class="note">'+t('shown')+' '+a.length+' '+t('ofN')+' '+T.length+'</p>'+Object.keys(g).sort(fsort).map(k=>'<div class="gh">'+esc(k)+'<span>'+g[k].filter(isD).length+' '+t('ofN')+' '+g[k].length+' '+t('doneN')+'</span></div>'+g[k].map(card).join('')).join('')}
 const isDn=x=>get(x,'status')==='Выполнена';
 const stK=x=>isDn(x)?2:get(x,'status')==='В работе'?1:0;
-const ZN=()=>{const c={};T.forEach(x=>{const k=get(x,'floor_zone')||'—';c[k]=(c[k]||0)+1});return Object.keys(c).sort((p,r)=>c[r]-c[p]||p.localeCompare(r))};
+const ZN=()=>{const c={};T.forEach(x=>{const k=get(x,'floor_zone')||'—';c[k]=(c[k]||0)+1});return Object.keys(c).sort(fsort)};
 // Мини-график: число задач по зонам (как столбики в KPI референса).
 function bars(f){const v=ZN().map(k=>T.filter(x=>(get(x,'floor_zone')||'—')===k&&f(x)).length),m=Math.max(1,...v);
  return '<span class="sp" aria-hidden="true">'+v.map(n=>'<i style="height:'+Math.max(10,Math.round(100*n/m))+'%"'+(n?'':' class="z0"')+'></i>').join('')+'</span>'}
@@ -260,11 +269,14 @@ function renderTeam(){const m={};T.forEach(x=>{const k=get(x,'executor')||'';(m[
   return '<tr'+(fe===k&&k?' class="sel"':'')+'><td><button type="button" class="lnk" data-ex="'+esc(k)+'">'+esc(k||t('none'))+'</button></td><td class="n">'+a.length+'</td><td class="n">'+d+'</td><td><span class="st '+st[0]+'">'+esc(st[1])+'</span></td></tr>'}).join('');
  $('team').innerHTML='<div class="ph"><b>'+t('team')+'</b><span>'+(fe?'<button type="button" class="lnk" data-ex="">✕ '+esc(t('allEx'))+'</button>':esc(t('tapEx')))+'</span></div><div class="tw"><table><tr><th>'+t('exec')+'</th><th class="n">'+t('tasksN')+'</th><th class="n">'+t('ready')+'</th><th>'+t('status')+'</th></tr>'+rows+'</table></div>'}
 $('team').addEventListener('click',e=>{const b=e.target.closest('[data-ex]');if(!b)return;const v=b.dataset.ex;$('fe').value=$('fe').value===v?'':v;renderList();renderTeam();$('t1').click();if($('fe').value)$('v1').scrollIntoView({behavior:'smooth',block:'start'})});
-function renderBuy(){const m={};T.filter(buy).forEach(x=>{const k=get(x,'purchase_item_or_action')||'—';(m[k]=m[k]||[]).push(x.task_id)});
- const ks=Object.keys(m).sort();$('buy').innerHTML=ks.length?'<tr><th></th><th>'+t('item')+'</th></tr>'+ks.map(k=>'<tr><td><input type="checkbox" data-b="'+esc(k)+'"'+(bought[k]?' checked':'')+'></td><td><b>'+esc(k)+'</b>'+(bought[k]?' <span class="b done">'+t('bought')+'</span>':'')+'<div class="note">'+t('forT')+' '+m[k].join(', ')+'</div></td></tr>').join(''):'<tr><td>'+t('noBuy')+'</td></tr>';
- window.BL=ks.filter(k=>!bought[k]).map(k=>'• '+k+' ('+t('forT')+' '+m[k].join(', ')+')').join('\n')}
-function chips(){$('chips').innerHTML=[['mine','f_mine'],['buy','f_buy'],['q','f_q'],['late','f_late']].map(a=>'<button data-c="'+a[0]+'" class="'+(fl[a[0]]?'on':'')+'">'+t(a[1])+'</button>').join('')+'<button data-c="print">'+t('print')+'</button>'}
-function fillOpts(){opts($('fe'),t('exec'),uniq('executor'));opts($('fz'),t('zone'),[...new Set(T.map(zk))].sort());
+function renderBuy(){const m={};T.filter(buy).forEach(x=>{const k=get(x,'purchase_item_or_action')||'—';(m[k]=m[k]||[]).push(x)});
+ const tl=x=>x.task_id+' · '+tx(x,'task','work')+' · '+zk(x)+(get(x,'executor')?' · '+get(x,'executor'):'');
+ const ks=Object.keys(m).sort((p,r)=>fsort(fz(m[p][0]),fz(m[r][0]))||p.localeCompare(r));
+ $('buy').innerHTML=ks.length?'<tr><th></th><th>'+t('item')+'</th></tr>'+ks.map(k=>'<tr><td><input type="checkbox" data-b="'+esc(k)+'"'+(bought[k]?' checked':'')+'></td><td><b>'+esc(k)+'</b>'+(bought[k]?' <span class="b done">'+t('bought')+'</span>':'')+m[k].map(x=>'<div class="note">→ <button type="button" class="lnk" data-go="'+x.task_id+'">'+esc(tl(x))+'</button></div>').join('')+'</td></tr>').join(''):'<tr><td>'+t('noBuy')+'</td></tr>';
+ window.BL=ks.filter(k=>!bought[k]).map(k=>'• '+k+'\n'+m[k].map(x=>'   → '+tl(x)).join('\n')).join('\n')}
+$('buy').addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(!b)return;const id=b.dataset.go;$('q').value=id;$('t1').click();renderList();const d=document.querySelector('details[data-id="'+id+'"]');if(d){d.open=true;d.scrollIntoView({behavior:'smooth',block:'center'})}});
+function chips(){$('chips').innerHTML=[['mine','f_mine'],['buy','f_buy'],['q','f_q'],['late','f_late'],['arch','f_arch']].map(a=>'<button data-c="'+a[0]+'" class="'+(fl[a[0]]?'on':'')+'">'+t(a[1])+(a[0]==='arch'?' ('+T.filter(isDn).length+')':'')+'</button>').join('')+'<button data-c="print">'+t('print')+'</button>'}
+function fillOpts(){opts($('fe'),t('exec'),uniq('executor'));opts($('fz'),t('zone'),[...new Set(T.map(fz))].sort(fsort));
  sel($('fs'),t('status'),[...new Set([...ST,...uniq('status')])].map(s=>[s,stL(s)]));
  sel($('fp'),t('prio'),[...PR.map(p=>[p,prL(p)]),['_','—']]);
  opts($('fm'),t('mat'),uniq('materials_status'))}
@@ -302,7 +314,9 @@ $('ef').onsubmit=e=>{e.preventDefault();const x=byId(cur),prev=snap(cur),id=cur;
  batch=true;EF.forEach(([f,,ty])=>{const el=$('e_'+f);let v=el.value;if(ty==='cb'){const o=String(x[f]??'');v=el.checked?'True':(o==='True'?'False':o)}setF(id,f,v)});batch=false;pushEd(id);
  $('dlg').close();refresh();toast(t('saved'),restore(id,prev))};
 $('mc').onclick=()=>$('dlg').close();
-$('dlg').onclick=e=>{if(e.target===$('dlg'))$('dlg').close()};
+// закрытие по фону: только если нажатие и клик оба на backdrop и нет выделения текста
+function bdClose(d){let dn=false;const pd=e=>{dn=e.target===d};d.addEventListener('pointerdown',pd);d.addEventListener('mousedown',pd);d.addEventListener('click',e=>{const s=window.getSelection?String(window.getSelection()):'';if(dn&&e.target===d&&!s)d.close();dn=false})}
+bdClose($('dlg'));
 $('lang').onclick=()=>{L=L==='ru'?'uz':'ru';try{localStorage.setItem('lang',L)}catch(e){}ui()};
 $('th').onclick=()=>{const d=document.documentElement,dark=d.dataset.theme?d.dataset.theme==='dark':matchMedia('(prefers-color-scheme:dark)').matches;d.dataset.theme=dark?'light':'dark'};
 $('t1').onclick=()=>{$('v1').classList.remove('hid');$('v2').classList.add('hid');$('t1').classList.add('on');$('t2').classList.remove('on')};
@@ -314,43 +328,132 @@ $('list').addEventListener('click',e=>{const el=e.target.closest('button');if(!e
  if(d.done){e.preventDefault();const x=byId(d.done);if(get(x,'status')==='Выполнена')setSt(d.done,x.status!=='Выполнена'?x.status:'В работе');else setSt(d.done,'Выполнена');return}
  if(d.pr!==undefined){const[id,p]=d.pr.split('|');setF(id,'priority',p);refresh();return}
  if(d.st){const[id,s]=d.st.split('|');setSt(id,s);return}
+ if(d.madd){const inp=el.parentNode.querySelector('input'),n=inp.value.trim();if(!n)return;const x=byId(d.madd);setMats(d.madd,[...mats(x),{n,s:MS[0]}]);return}
+ if(d.mdel){const[id,i]=d.mdel.split('|'),a=mats(byId(id));a.splice(+i,1);setMats(id,a);return}
  if(d.edit){openEd(d.edit);return}
  if(d.reset){const id=d.reset;if(!confirm(t('resetQ')))return;const prev=snap(id);delete ed[id];save();refresh();pushEd(id);toast(t('reset'),restore(id,prev))}});
+$('list').addEventListener('change',e=>{const m=e.target.dataset&&e.target.dataset.ms;if(!m)return;const[id,i]=m.split('|'),a=mats(byId(id)),k=get(byId(id),'purchase_item_or_action');a[+i].s=e.target.value;setMats(id,a);if(a[+i].n===k){bought[k]=e.target.value==='Куплено';try{localStorage.setItem('bought',JSON.stringify(bought))}catch(_){}push({bought:{[k]:bought[k]}})}});
+$('list').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.dataset&&e.target.dataset.mi!==undefined){e.preventDefault();const b=e.target.parentNode.querySelector('[data-madd]');if(b)b.click()}});
 $('buy').addEventListener('change',e=>{const k=e.target.dataset.b;if(k===undefined)return;bought[k]=e.target.checked;try{localStorage.setItem('bought',JSON.stringify(bought))}catch(_){};renderBuy();push({bought:{[k]:e.target.checked}})});
 $('info').onclick=()=>$('foot').classList.toggle('show');
 $('cp').onclick=()=>{const b=$('cp');const ok=()=>{b.textContent=t('copied');setTimeout(()=>b.textContent=t('copy'),1500)};try{navigator.clipboard.writeText(window.BL).then(ok,()=>{})}catch(e){const a=document.createElement('textarea');a.value=window.BL;document.body.appendChild(a);a.select();document.execCommand('copy');a.remove();ok()}};
 // Голосовой ввод для новой задачи
-let recog;
+// VOICE-BEGIN (диктовка: блок до VOICE-END вклеивается в index.html, тестируется в tests/voice.test.js)
+// Склейка распознанных кусков без повторов (Android Chrome присылает финалы накопительно или дублями)
+function vNorm(s){return String(s||'').replace(/\s+/g,' ').trim()}
+function vJoin(a,b){a=vNorm(a);b=vNorm(b);if(!b)return a;if(!a)return b;const la=a.toLowerCase(),lb=b.toLowerCase();
+ if(lb.startsWith(la))return b;if(la.endsWith(lb))return a;
+ // перекрытие «хвост a = начало b» (перезапуск повторил последние слова)
+ const wa=a.split(' '),wb=b.split(' ');for(let k=Math.min(wa.length,wb.length);k>0;k--){if(wa.slice(-k).join(' ').toLowerCase()===wb.slice(0,k).join(' ').toLowerCase())return wa.concat(wb.slice(k)).join(' ')}
+ return a+' '+b}
+function vCollect(results){let fin='',tmp='';for(let i=0;i<results.length;i++){const r=results[i],t=r&&r[0]?r[0].transcript:'';if(r.isFinal)fin=vJoin(fin,t);else tmp+=' '+t}return{fin,tmp:vNorm(tmp)}}
+const VMSG={'not-allowed':'Нет доступа к микрофону: разрешите его для сайта в настройках браузера (значок замка у адреса).','service-not-allowed':'Нет доступа к микрофону: разрешите его для сайта в настройках браузера.','audio-capture':'Микрофон не найден или занят другим приложением.','language-not-supported':'Браузер не распознаёт русский язык.'};
+// Непрерывная диктовка: перезапуск после onend/no-speech/network, пока пользователь не нажмёт «Стоп»
+// ui: {getText, setText, status(text, on)}; opt.timer — для тестов
+function makeDictation(SR,ui,opt){opt=opt||{};const timer=opt.timer||setTimeout,MAXNET=opt.maxNet||5;
+ let rec=null,want=false,base='',done='',sess='',netFails=0,fatal='',restartT=0;
+ const show=tmp=>ui.setText(vJoin(vJoin(base,done),vJoin(sess,tmp)));
+ function begin(){sess='';const r=new SR();rec=r;r.lang='ru-RU';r.continuous=true;r.interimResults=true;r.maxAlternatives=1;
+  r.onstart=()=>{if(r!==rec)return;ui.status('🎤 Слушаю… Говорите, паузы не страшны. Нажмите «Стоп», когда закончите.',true)};
+  r.onresult=e=>{if(r!==rec)return;netFails=0;const c=vCollect(e.results);sess=c.fin;show(c.tmp)};
+  r.onerror=e=>{if(r!==rec)return;const er=e.error;
+   if(VMSG[er]){fatal=VMSG[er];want=false;return}
+   if(er==='network'){netFails++;if(netFails>=MAXNET){fatal='Нет связи с сервисом распознавания. Проверьте интернет и нажмите 🎤 снова.';want=false}
+    else ui.status('⚠ Связь с распознаванием прервалась, переподключаюсь…',true);return}
+   if(er==='no-speech'){ui.status('🎤 Тишина… продолжаю слушать.',true);return}
+   if(er!=='aborted')ui.status('⚠ Ошибка распознавания: '+er+'. Продолжаю…',true)};
+  r.onend=()=>{if(r!==rec)return;done=vJoin(done,sess);sess='';show('');
+   if(want){restartT=timer(()=>{restartT=0;if(want)tryStart()},netFails?Math.min(4000,500*netFails):250);return}
+   rec=null;ui.status(fatal?'⚠ '+fatal:(vNorm(done)?'✓ Готово. Проверьте текст и нажмите «Разобрать».':''),false)};
+  r.start()}
+ function tryStart(){try{begin()}catch(e){want=false;rec=null;ui.status('⚠ '+(e&&e.message||'Не удалось включить микрофон'),false)}}
+ return{get on(){return want},
+  start(){if(want)return;want=true;fatal='';netFails=0;base=ui.getText();done='';tryStart()},
+  stop(){want=false;if(rec){try{rec.stop()}catch(_){}}else ui.status(vNorm(done)?'✓ Готово. Проверьте текст и нажмите «Разобрать».':'',false)},
+  toggle(){want?this.stop():this.start()}}}
+// VOICE-END
 const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(/Mac/.test(navigator.userAgent)&&'ontouchend' in document);
 $('addTask').onclick=()=>$('newTaskDlg').showModal();
 $('ntCancel').onclick=()=>$('newTaskDlg').close();
-$('newTaskDlg').onclick=e=>{if(e.target===$('newTaskDlg'))$('newTaskDlg').close()};
+bdClose($('newTaskDlg'));
+let dict=null;
+$('newTaskDlg').addEventListener('close',()=>{if(dict&&dict.on)dict.stop()});
 $('voiceBtn').onclick=()=>{
  if(isIOS){$('taskInput').focus();$('voiceStatus').textContent='Нажмите 🎤 на клавиатуре';setTimeout(()=>$('voiceStatus').textContent='',4000);return}
- if(!('webkitSpeechRecognition' in window||'SpeechRecognition' in window)){$('voiceStatus').textContent='⚠ Голосовой ввод недоступен';return}
- if(!recog){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;recog=new SR();recog.lang='ru-RU';recog.continuous=false;recog.interimResults=false;
-  recog.onstart=()=>$('voiceStatus').textContent='🎤 Слушаю...';
-  recog.onresult=e=>{const txt=e.results[0][0].transcript;$('taskInput').value=txt;$('voiceStatus').textContent='✓ Распознано'};
-  recog.onerror=e=>$('voiceStatus').textContent='⚠ Ошибка: '+e.error;
-  recog.onend=()=>{if($('voiceStatus').textContent==='🎤 Слушаю...')$('voiceStatus').textContent=''}}
- try{recog.start()}catch(e){$('voiceStatus').textContent='⚠ '+e.message}};
-$('ntf').onsubmit=e=>{e.preventDefault();const txt=$('taskInput').value.trim();if(!txt){alert('Введите описание задачи');return}
- const nextId='D2-'+String(Math.max(0,...T.map(x=>+(/(\d+)$/.exec(x.task_id)||[0,0])[1]))+1).padStart(3,'0');const parsed=parseTaskInput(txt);
- const newTask={task_id:nextId,object:'Дом 2',floor_zone:parsed.zone||'',room:parsed.room||'',category:parsed.category||'',task:parsed.task||txt,task_type:parsed.type||'',responsible:parsed.responsible||'',executor:parsed.executor||parsed.responsible||'',materials_status:parsed.materials||'',purchase_required:'False',purchase_item_or_action:'',status:'Новая',priority:parsed.priority||'',deadline:parsed.deadline||'',comment:'',pending:false,uz:{}};
- T.push(newTask);if(online)push({nt:[newTask]});else{NT.push(newTask);saveNT()}refresh();$('newTaskDlg').close();$('taskInput').value='';$('voiceStatus').textContent='';toast('Задача '+nextId+' создана')};
-function parseTaskInput(txt){const t=txt.toLowerCase(),res={};
- if(/высок/i.test(txt))res.priority='Высокий';else if(/средн/i.test(txt))res.priority='Средний';else if(/низк/i.test(txt))res.priority='Низкий';
- const exm=/исполнитель\s+([а-яё]+)/i.exec(txt);if(exm)res.executor=exm[1].charAt(0).toUpperCase()+exm[1].slice(1);
- const rpm=/ответственн[а-яё]*\s+([а-яё]+)/i.exec(txt);if(rpm)res.responsible=rpm[1].charAt(0).toUpperCase()+rpm[1].slice(1);
- const zm=/(\d)\s*эт/i.exec(txt);if(zm)res.zone=zm[1]+' этаж';
- const rm=/(прихож|гостин|кухн|санузел|спальн|ванн|коридор|кабинет|терраса|гараж|подвал|чердак)/i.exec(txt);if(rm){const rn={'прихож':'Прихожая','гостин':'Гостиная','кухн':'Кухня','санузел':'Санузел','спальн':'Спальня','ванн':'Ванная','коридор':'Коридор','кабинет':'Кабинет','терраса':'Терраса','гараж':'Гараж','подвал':'Подвал','чердак':'Чердак'};res.room=rn[rm[1].toLowerCase()]}
- const dm=/(\d{1,2})\.(\d{1,2})\.?(\d{2,4})?/i.exec(txt);if(dm){const d=dm[1].padStart(2,'0'),m=dm[2].padStart(2,'0'),y=dm[3]?dm[3]:'2026';res.deadline=(y.length===2?'20'+y:y)+'-'+m+'-'+d}
- const cat=/(зеркал|освещен|электр|сантехн|мебел|двер|окн|пол|потолок|стен|покрас|плитк|обои|кондиционер)/i.exec(txt);
- if(cat){const cm={'зеркал':'Зеркала','освещен':'Освещение','электр':'Электрика','сантехн':'Сантехника','мебел':'Мебель','двер':'Двери','окн':'Окна','пол':'Полы','потолок':'Потолки','стен':'Стены','покрас':'Покраска','плитк':'Плитка','обои':'Обои','кондиционер':'Кондиционеры'};res.category=cm[cat[1].toLowerCase()]||cat[1]}
- const ty=/(монтаж|установ|покрас|отделк|ремонт|замен|провер|наладк|чист|уборк)/i.exec(txt);
- if(ty){const tm={'монтаж':'Монтаж','установ':'Установка','покрас':'Покраска','отделк':'Отделка','ремонт':'Ремонт','замен':'Замена','провер':'Проверка','наладк':'Наладка','чист':'Чистка','уборк':'Уборка'};res.type=tm[ty[1].toLowerCase()]||ty[1]}
- res.task=txt.replace(/исполнитель\s+[а-яё]+/gi,'').replace(/ответственн[а-яё]*\s+[а-яё]+/gi,'').replace(/высок[а-яё]* приоритет/gi,'').replace(/средн[а-яё]* приоритет/gi,'').replace(/низк[а-яё]* приоритет/gi,'').replace(/(до|срок)?\s*\d{1,2}\.\d{1,2}\.?\d{0,4}/gi,'').replace(/\s*,(\s*,)+/g,',').replace(/[\s,.;]+$/,'').replace(/\s+/g,' ').trim();
+ const vs=$('voiceStatus'),ta=$('taskInput'),btn=$('voiceBtn'),hint=' Можно диктовать кнопкой 🎤 на клавиатуре телефона.';
+ const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+ if(!SR){ta.focus();vs.textContent='⚠ Браузер не умеет распознавать речь.'+hint;return}
+ if(!dict)dict=makeDictation(SR,{getText:()=>ta.value,setText:v=>{ta.value=v},
+  status:(t,on)=>{vs.textContent=t+(!on&&t.startsWith('⚠')?hint:'');btn.classList.toggle('on',on);btn.textContent=on?'⏹ Стоп':'🎤 Голосовой ввод'}});
+ dict.toggle()};
+// AI-PARSE-BEGIN (чистые функции: вклеиваются в index.html, тестируются в tests/parse.test.js)
+const EXL=['Алексей, электрик','Роман, отделочник','Роман, снабженец','Илья','Сергей','Николай, шторы','Ахмат','Андрей','Эдик','Степан, мебельщик'];
+const ZL=['1 этаж','2 этаж','Улица'],PRL=['Высокий','Средний','Низкий'];
+const CATL=['Мебель','Электрика','Свет','Двери','Отделка','Покраска','Зеркала','Слаботочка','Обои','Шторы','Плитка','Водосток','Сантехника','Отопление','Вентиляция','Кондиционирование','Уборка','Напольное покрытие','Техника','Декор','Окна','Стены','Потолки','Полы'];
+// Текст задачи — данные: убрать HTML-комментарии, невидимые и управляющие символы
+function cleanTxt(s){return String(s??'').replace(/<!--[\s\S]*?-->/g,' ').replace(/[​-‏‪-‮⁦-⁩﻿­]/g,'').replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g,'').replace(/\s+/g,' ').trim()}
+function isoD(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function okDate(v){if(typeof v!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(v))return'';const d=new Date(v+'T00:00:00Z');return!isNaN(d)&&d.toISOString().slice(0,10)===v?v:''}
+// Повторная проверка ответа ИИ в браузере: только белые списки, обрезка длины, без HTML
+function normAI(o){if(!o||typeof o!=='object'||Array.isArray(o))return null;
+ const s=(v,n)=>typeof v==='string'?cleanTxt(v.replace(/[<>]/g,'')).slice(0,n):'',p=(v,l)=>typeof v==='string'&&l.includes(v.trim())?v.trim():'';
+ const task=s(o.task,300);if(!task)return null;
+ return{task,executor:p(o.executor,EXL),priority:p(o.priority,PRL),zone:p(o.zone,ZL),room:s(o.room,60),deadline:okDate(o.deadline),category:p(o.category,CATL),mats:Array.isArray(o.mats)?o.mats.slice(0,10).map(m=>s(m,120)).filter(Boolean):[]}}
+function canonEx(w,txt){const n=w.toLowerCase();if(/^алекс|^лёш|^леш/.test(n))return'Алексей, электрик';if(/^никол/.test(n))return'Николай, шторы';if(/^ром/.test(n))return/снабж|закуп|купит|заказ|привез/i.test(txt)?'Роман, снабженец':'Роман, отделочник';if(/^серг|^серёж|^сереж/.test(n))return'Сергей';if(/^иль/.test(n))return'Илья';if(/^ахм|^нахм/.test(n))return'Ахмат';if(/^андр/.test(n))return'Андрей';if(/^эди/.test(n))return'Эдик';if(/^степ/.test(n))return'Степан, мебельщик';return w.charAt(0).toUpperCase()+w.slice(1)}
+const B='(?:^|[^а-яё])',E='(?=[^а-яё]|$)';
+const NAME_RE=new RegExp(B+'(алексе[йюя]|лёш[аеу]|леш[аеу]|роман[ауе]?|ром[аеу]|серге[йюя]|серёж[аеу]|сереж[аеу]|никола[йюя]|иль[яюе]|ахмат[ауе]?|андре[йюя]|эдик[ауе]?|степан[ауе]?)'+E,'i');
+const WD={'понедельник':1,'вторник':2,'сред':3,'четверг':4,'пятниц':5,'суббот':6,'воскресень':0};
+const MON=['январ','феврал','март','апрел','ма','июн','июл','август','сентябр','октябр','ноябр','декабр'];
+// Запасной разбор по шаблонам (если ИИ недоступен)
+function parseTaskInput(txt,now){now=now||new Date();const res={},T0=new Date(now.getFullYear(),now.getMonth(),now.getDate());let rest=cleanTxt(txt);const cut=re=>{rest=rest.replace(re,' ')};
+ if(/не\s*срочн|низк[а-яё]*\s*приоритет/i.test(txt))res.priority='Низкий';else if(/срочн|высок[а-яё]*\s*приоритет|в\s+первую\s+очередь/i.test(txt))res.priority='Высокий';else if(/средн[а-яё]*\s*приоритет/i.test(txt))res.priority='Средний';
+ cut(/,?\s*(не\s*)?срочно,?/gi);cut(/,?\s*(высок|средн|низк)[а-яё]*\s*приоритет[а-яё]*,?/gi);cut(/,?\s*в\s+первую\s+очередь,?/gi);
+ const exm=/исполнител[а-яё]*\s*[:\-–]?\s*([а-яё]+)/i.exec(txt);if(exm){res.executor=canonEx(exm[1],txt);cut(/,?\s*исполнител[а-яё]*\s*[:\-–]?\s*[а-яё]+,?/gi)}
+ else{const nm=NAME_RE.exec(txt);if(nm){res.executor=canonEx(nm[1],txt);cut(new RegExp(B+nm[1]+'\\s*,?','i'))}}
+ const rpm=/ответственн[а-яё]*\s+([а-яё]+)/i.exec(txt);if(rpm){res.responsible=canonEx(rpm[1],txt);cut(/,?\s*ответственн[а-яё]*\s+[а-яё]+,?/gi)}
+ if(/(2|втор)[а-яё]*\s*эт|антресол|лестниц|мансард/i.test(txt))res.zone='2 этаж';else if(/(1|перв)[а-яё]*\s*эт/i.test(txt))res.zone='1 этаж';else if(/улиц|фасад|крыльц|двор|участ|водосток|кровл/i.test(txt))res.zone='Улица';
+ const RM=[[/гостев[а-яё]*\s+санузл|гостев[а-яё]*\s+санузел/,'Гостевой санузел'],[/взросл[а-яё]*\s+санузл|взросл[а-яё]*\s+санузел/,'Взрослый санузел'],[/прихож/,'Прихожая'],[/гостин/,'Гостиная'],[new RegExp(B+'зал'+'[ауе]?'+E),'Зал'],[/кухн/,'Кухня'],[/санузл|санузел|туалет/,'Санузел'],[/детск/,'Детская'],[/гардероб/,'Гардеробная'],[/спальн/,'Спальня'],[/ванн/,'Ванная'],[/коридор/,'Коридор'],[/кабинет/,'Кабинет'],[/террас/,'Терраса'],[/гараж/,'Гараж'],[/крыльц/,'Крыльцо'],[/антресол/,'Антресоль'],[/лестниц/,'Лестница'],[/котельн/,'Котельная']];
+ for(const[re,n]of RM)if(new RegExp(re.source,'i').test(txt)){res.room=n;break}
+ let dl=null,m;
+ if(m=/(\d{1,2})\.(\d{1,2})(?:\.(\d{2,4}))?/.exec(txt)){let y=m[3]?(m[3].length===2?2000+ +m[3]:+m[3]):now.getFullYear();dl=new Date(y,+m[2]-1,+m[1]);if(!m[3]&&dl<T0)dl.setFullYear(y+1);cut(/,?\s*(до|к|срок[а-яё]*)?\s*\d{1,2}\.\d{1,2}(\.\d{2,4})?,?/gi)}
+ else if(m=/(\d{1,2})\s+(январ|феврал|март|апрел|ма|июн|июл|август|сентябр|октябр|ноябр|декабр)[а-яё]*/i.exec(txt)){const mi=MON.indexOf(m[2].toLowerCase());dl=new Date(now.getFullYear(),mi,+m[1]);if(dl<T0)dl.setFullYear(now.getFullYear()+1);cut(new RegExp(',?\\s*(до|к|срок[а-яё]*)?\\s*'+m[0]+',?','i'))}
+ else if(m=/(понедельник|вторник|сред|четверг|пятниц|суббот|воскресень)[а-яё]*/i.exec(txt)){const w=WD[m[1].toLowerCase()];dl=new Date(T0);dl.setDate(dl.getDate()+(((w-T0.getDay())+7)%7||7));cut(new RegExp(',?\\s*(до|к|в|на|срок[а-яё]*)?\\s*'+m[0]+',?','i'))}
+ else if(/послезавтра/i.test(txt)){dl=new Date(T0);dl.setDate(dl.getDate()+2);cut(/,?\s*(до|к|на)?\s*послезавтра,?/gi)}
+ else if(/завтра/i.test(txt)){dl=new Date(T0);dl.setDate(dl.getDate()+1);cut(/,?\s*(до|к|на)?\s*завтра,?/gi)}
+ else if(/сегодня/i.test(txt)){dl=new Date(T0);cut(/,?\s*(до|к|на)?\s*сегодня,?/gi)}
+ else if(m=/через\s+(\d+|неделю|две\s+недели)\s*(дн[а-яё]*)?/i.exec(txt)){const k=/^\d+$/.test(m[1])?+m[1]:/две/i.test(m[1])?14:7;dl=new Date(T0);dl.setDate(dl.getDate()+k);cut(new RegExp(',?\\s*'+m[0]+',?','i'))}
+ if(dl)res.deadline=isoD(dl);
+ const CT=[[/зеркал/,'Зеркала'],[/штор|карниз|тюл/,'Шторы'],[/светильник|люстр|подсветк|лампочк|освещен|свет(?![а-яё]*ло)/,'Свет'],[/розетк|выключател|кабел|провод|электр|автомат|щит/,'Электрика'],[/домофон|интернет|роутер|слаботоч|камер/,'Слаботочка'],[/шкаф|полк|тумб|мебел|фасад[а-яё]*\s+кухн|столешниц/,'Мебель'],[/двер/,'Двери'],[/покрас|подкрас|краск/,'Покраска'],[/плитк|керамогранит/,'Плитка'],[/обо[иея]/,'Обои'],[/смесител|унитаз|раковин|сантехн|душ/,'Сантехника'],[/кондиционер/,'Кондиционирование'],[/вентиляц|вытяжк/,'Вентиляция'],[/батаре|радиатор|отоплен|тёплый пол|теплый пол/,'Отопление'],[/водосто/,'Водосток'],[/уборк|убрать|вывез[а-яё]*\s+мусор/,'Уборка'],[/плинтус|откос|шпакл|штукатур|затир|герметик|отделк/,'Отделка'],[/ламинат|паркет|напольн/,'Напольное покрытие'],[/окн/,'Окна']];
+ for(const[re,n]of CT)if(new RegExp(re.source,'i').test(txt)){res.category=n;break}
+ const ty=/(монтаж|смонтир|установ|покрас|отделк|ремонт|замен|провер|наладк|чист|уборк)/i.exec(txt);
+ if(ty){const tm={'монтаж':'Монтаж','смонтир':'Монтаж','установ':'Установка','покрас':'Покраска','отделк':'Отделка','ремонт':'Ремонт','замен':'Замена','провер':'Проверка','наладк':'Наладка','чист':'Чистка','уборк':'Уборка'};res.type=tm[ty[1].toLowerCase()]||ty[1]}
+ res.mats=[];const mr=/(?:купить|докупить|заказать|привезти)\s+([^,.;]+)/gi;let mm;while(mm=mr.exec(txt))res.mats.push(mm[1].trim());
+ rest=rest.replace(/\s*,(\s*,)+/g,',').replace(/^[\s,.;:\-–]+|[\s,.;:\-–]+$/g,'').replace(/\s+([,.;])/g,'$1').replace(/\s+/g,' ').trim();
+ res.task=rest?rest.charAt(0).toUpperCase()+rest.slice(1):cleanTxt(txt);
  return res}
+// AI-PARSE-END
+// Разбор диктовки: сначала ИИ на сервере (api.php?action=parse, только с кодом правок), при ошибке — запасной разбор
+let aiBusy=false,aiShown=false;
+const fillSel=(id,l)=>{$(id).innerHTML='<option value="">—</option>'+l.map(v=>'<option>'+esc(v)+'</option>').join('')};
+fillSel('ap_executor',EXL);fillSel('ap_priority',PRL);fillSel('ap_zone',ZL);
+function ntReset(){aiShown=false;aiBusy=false;$('aiPrev').classList.add('hid');$('aiFix').classList.add('hid');$('ntGo').textContent='Разобрать';$('ntGo').disabled=false;$('taskInput').readOnly=false}
+async function aiParse(txt){if(!online||!WK)return null;const ac=new AbortController(),tm=setTimeout(()=>ac.abort(),25000);
+ try{const r=await fetch(API+'?action=parse',{method:'POST',headers:{'Content-Type':'application/json','X-Key':WK},body:JSON.stringify({text:txt}),signal:ac.signal});
+  if(!r.ok)return null;const j=await r.json();return j&&j.ok?normAI(j.task):null}catch(_){return null}finally{clearTimeout(tm)}}
+function showPrev(p,byAI){const set=(id,v)=>{const el=$(id);if(el.tagName==='SELECT'&&v&&![...el.options].some(o=>o.value===v))el.add(new Option(v,v));el.value=v||''};
+ set('ap_task',p.task);set('ap_executor',p.executor);set('ap_priority',p.priority);set('ap_zone',p.zone);set('ap_room',p.room);set('ap_deadline',p.deadline);set('ap_category',p.category);$('ap_mats').value=(p.mats||[]).join('\n');
+ $('aiHead').innerHTML=byAI?'🤖 <b>ИИ разобрал</b> — проверьте поля':'⚙ Разобрано по шаблону (ИИ недоступен) — проверьте поля';
+ $('aiPrev').classList.remove('hid');$('aiFix').classList.remove('hid');$('ntGo').textContent='Создать';$('ntGo').disabled=false;$('taskInput').readOnly=true;aiShown=true}
+$('aiFix').onclick=()=>{ntReset();$('taskInput').focus()};
+$('ntf').onsubmit=async e=>{e.preventDefault();const txt=cleanTxt($('taskInput').value);if(!txt){alert('Введите описание задачи');return}
+ if(aiBusy)return;
+ if(!aiShown){aiBusy=true;$('ntGo').disabled=true;$('ntGo').textContent='🤖 ИИ думает…';$('voiceStatus').textContent='';
+  if(online&&!WK)askKey();const ai=await aiParse(txt);aiBusy=false;showPrev(ai||parseTaskInput(txt),!!ai);return}
+ const g=id=>$(id).value.trim(),ms=g('ap_mats').split('\n').map(x=>x.trim().replace(/[|]/g,' ')).filter(Boolean);
+ const nextId='D2-'+String(Math.max(0,...T.map(x=>+(/(\d+)$/.exec(x.task_id)||[0,0])[1]))+1).padStart(3,'0');
+ const newTask={task_id:nextId,object:'Дом 2',floor_zone:g('ap_zone'),room:g('ap_room'),category:g('ap_category'),task:g('ap_task')||txt,task_type:'',responsible:g('ap_executor'),executor:g('ap_executor'),materials_status:'',purchase_required:'False',purchase_item_or_action:'',status:'Новая',priority:g('ap_priority'),deadline:okDate(g('ap_deadline')),comment:'Голос: '+txt.slice(0,500),mats:ms.length?ms.map(m=>m+'|'+MS[0]).join('\n'):'',pending:false,uz:{}};
+ T.push(newTask);if(online)push({nt:[newTask]});else{NT.push(newTask);saveNT()}refresh();$('newTaskDlg').close();$('taskInput').value='';$('voiceStatus').textContent='';ntReset();toast('Задача '+nextId+' создана')};
+$('newTaskDlg').addEventListener('close',ntReset);
 ui();pull();
 </script>
 </body>
