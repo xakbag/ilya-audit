@@ -1,0 +1,20 @@
+[
+ {"name":"kl-flow-request","url":"https://kub-lesa.ru/catalog/doska-obreznaya/25x100x6000-kl-001/","pre":[
+  "(()=>{const b=[...document.querySelectorAll('button')].find(b=>/Добавить в запрос/.test(b.textContent));b&&b.click();return !!b})()",
+  "(()=>{const b=[...document.querySelectorAll('a,button')].find(b=>/Мой запрос/.test(b.textContent));b&&b.click();return !!b})()",
+  "(()=>{const d=document.querySelector('dialog[open],[role=dialog],aside');return d?d.innerText.replace(/\\s+/g,' ').slice(0,900):document.body.innerText.slice(0,300)})()",
+  "[...document.forms].map(f=>[...f.elements].filter(x=>x.type!=='hidden').map(x=>(x.type||x.tagName)+':'+(x.name||x.placeholder||'')+(x.required?'*':'')).join(' '))"
+ ]},
+ {"name":"kl-flow-list","url":"https://kub-lesa.ru/","pre":[
+  "(()=>{const b=[...document.querySelectorAll('button')].find(b=>/Расчёт по списку/.test(b.textContent));b&&b.click();return !!b})()",
+  "(()=>{const d=document.querySelector('dialog[open],[role=dialog]');return d?d.innerText.replace(/\\s+/g,' ').slice(0,900):'нет диалога'})()",
+  "[...document.forms].map(f=>[...f.elements].filter(x=>x.type!=='hidden').map(x=>(x.type||x.tagName)+':'+(x.name||x.placeholder||'')+(x.required?'*':'')).join(' '))"
+ ]},
+ {"name":"gl-flow-calc","url":"https://granitline.ru/catalog/stone-603779621872/","pre":[
+  "(()=>{const b=[...document.querySelectorAll('a,button')].find(b=>/Рассчитать стоимость/.test(b.textContent));b&&b.click();return !!b})()",
+  "(()=>{const f=document.forms[0];return f?f.innerText.replace(/\\s+/g,' ').slice(0,600)+' | submitDisabled='+!!(f.querySelector('[type=submit]')||{}).disabled:'нет формы'})()"
+ ]},
+ {"name":"gl-flow-menu","url":"https://granitline.ru/","pre":[
+  "(()=>{const b=document.querySelector('header button');b&&b.click();return b?b.getAttribute('aria-label')||b.textContent:'нет кнопки'})()"
+ ]}
+]

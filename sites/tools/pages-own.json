@@ -1,0 +1,13 @@
+[
+ {"name":"gl-home","url":"https://granitline.ru/"},
+ {"name":"gl-catalog","url":"https://granitline.ru/catalog/"},
+ {"name":"gl-category","url":"https://granitline.ru/catalog/bruschatka/"},
+ {"name":"gl-product","url":"https://granitline.ru/catalog/stone-603779621872/"},
+ {"name":"gl-rigel","url":"https://granitline.ru/rigelny-kirpich/"},
+ {"name":"kl-home","url":"https://kub-lesa.ru/"},
+ {"name":"kl-catalog","url":"https://kub-lesa.ru/catalog/"},
+ {"name":"kl-category","url":"https://kub-lesa.ru/catalog/doska-obreznaya/"},
+ {"name":"kl-product","url":"https://kub-lesa.ru/catalog/doska-obreznaya/25x100x6000-kl-001/"},
+ {"name":"kl-delivery","url":"https://kub-lesa.ru/dostavka/"},
+ {"name":"kl-contacts","url":"https://kub-lesa.ru/kontakty/"}
+]
