@@ -5,13 +5,13 @@
 | H1 | Очередь стоит из-за контроллера LIGHT | **Подтверждена с уточнением**: до #2 держала память Windows, после #2 держат блокеры присутствия `interactive_console`/`active_rdp` (код :145-146), ночного окна нет; HEAVY не включался с 27.09 23:10 | evidence/step2-20260929-1357.txt, evidence/step2b-20260929-1359.txt, evidence/step26-transitions-*.txt, evidence/step27-presence-code-*.txt |
 | H2 | `empty_queue` при awaiting=4 — неверная метка | **Подтверждена** (awaiting=5) | evidence/step3-20260929-1404.txt, evidence/step3b-20260929-1410.txt |
 | H3 | `smart-quality30` failed из-за Restart/Type | **Опровергнута** (start-limit-hit от внешних запусков) | evidence/step3-20260929-1404.txt |
-| H4 | Одновременные таймеры → database is locked | **Не подтверждена** (совпадение есть, ошибок за сутки 0) | evidence/step4-20260929-1413.txt |
-| H5 | n8n-guard охраняет несуществующий n8n | **Опровергнута** (n8n в Docker, healthy) | evidence/step4-20260929-1413.txt |
-| H6 | partner@replies может отвечать клиентам | **Опровергнута** (только черновики + approve) | evidence/step4-20260929-1413.txt |
-| H7 | sender тикает каждую минуту при «выключен» | **Подтверждена** (выключатель — env) | evidence/step4-20260929-1413.txt |
+| H4 | Одновременные таймеры → database is locked | **Не подтверждена** (02.10: context/knowledge/qa-bridge стартуют в одну секунду, locked за 7 дней 0) | evidence/step4-20260929-1413.txt, evidence/step84-b6-recheck-20261002.raw.txt |
+| H5 | n8n-guard охраняет несуществующий n8n | **Опровергнута** (02.10: smart-n8n healthy, /healthz 200, RestartCount 0) | evidence/step4-20260929-1413.txt, evidence/step84-b6-recheck-20261002.raw.txt, evidence/step84b-b6-detail-20261002.raw.txt |
+| H6 | partner@replies может отвечать клиентам | **Опровергнута** (02.10: в ветке replies отправки нет; отправка только proposals + ручное одобрение + флаг) | evidence/step4-20260929-1413.txt, evidence/step84-b6-recheck-20261002.raw.txt, evidence/step84c-b6-extra-20261002-1804.txt |
+| H7 | sender тикает каждую минуту при «выключен» | **Подтверждена** (02.10: ~1 запуск/мин, все `disabled, sent 0`, флаг false) | evidence/step4-20260929-1413.txt, evidence/step84-b6-recheck-20261002.raw.txt |
 | H8 | Доска открыта через Funnel | **Подтверждена** (весь `/` → :8766 в интернет). 29.09 — владелец решил Funnel оставить, риск принят | evidence/step5-20260929-1425.txt |
 | H9 | Бэкапы только локальные | **Подтверждена** (+ токены в копии открытым текстом). 29.09 — решение «только локально»: restic в `C:\Backups\ilya-core`, снимок b2e6d75c 22:06, check OK, таймер 04:45; **восстановление проверено 30.09 11:04** (8457350a: 56/56 файлов, 29/29 SQLite ok) | evidence/step23-restore-test-20260930-1104.txt, evidence/step5b-20260929-1427.txt, evidence/step16-verify-20260929-2208.txt |
-| H10 | Автообновления перезапускают службы | **Частично** (unattended включён, перезапуски не доказаны) | evidence/step4-20260929-1413.txt |
+| H10 | Автообновления перезапускают службы | **Опровергнута** (02.10: только security, needrestart нет, после openssl 01.10 перезапусков служб нет, процессов со старой libssl 0) | evidence/step4-20260929-1413.txt, evidence/step84-b6-recheck-20261002.raw.txt, evidence/step84c-b6-extra-20261002-1804.txt |
 | H11 | Исполнители зависят от smart-vpn | **Не подтверждена** (VPN стабилен, исполнитель выключен) | evidence/step4-20260929-1413.txt |
 
 ---
@@ -77,21 +77,32 @@
 **Факт** (step5c, 14:30): context-refresh пишет только JSON (`catalog/context-registry.json`, чтение БД readonly) — с knowledge-refresh по базам не пересекается. sender и normalizer оба пишут в business.sqlite — пересечение реально, но locked-ошибок 0.
 **Влияние:** сейчас не наблюдается. **Исправление:** P2 — сдвинуть knowledge-refresh на +2 мин. **Критерий:** 0 locked за 7 дней. **Откат:** копия timer-юнита, daemon-reload. **От владельца:** ничего.
 
+**Перепроверка 02.10 18:00–18:04 МСК** (evidence/step84-b6-recheck-20261002.raw.txt): совпадение есть — `smart-qa-bridge`, `smart-context-refresh`, `smart-knowledge-refresh`: последний запуск 17:56:56, следующий 18:01:56, все три в одну секунду (qa-bridge — новый таймер от 02.10, пишет quality.sqlite; с двумя другими по базам не пересекается). sender и normalizer (оба `pipeline.py`, пишут business.sqlite) — 1 мин ±15 с (18:01:31 и 18:01:50). `database is locked`/`no such column` за 1 и 7 дней: 0.
+**Вывод:** не подтверждена, риск теоретический. Исправление P2: развести старты (`RandomizedDelaySec=60` у knowledge-refresh и qa-bridge). **Критерий:** разные секунды в `list-timers`, 0 locked за 7 дней. **Откат:** `.bak` timer-юнитов, daemon-reload. **От владельца:** «да» на правку двух timer-юнитов.
+
 ## H5. n8n-guard
 
 **Факт:** `smart-n8n-guard` — oneshot `n8n-health-guard.py`, ~каждые 61 с, After=docker.service; контейнер `smart-n8n` Up 2 days (healthy), 127.0.0.1:5678. Гипотеза опровергнута.
 **Исправление:** не требуется (P2 — при переходе на мониторинг по результату заменить healthcheck'ом Docker).
+
+**Перепроверка 02.10** (evidence/step84-b6-recheck-20261002.raw.txt, evidence/step84b-b6-detail-20261002.raw.txt): `smart-n8n-guard.timer` enabled, сервис oneshot Result=success; за 10 мин 10 прогонов, реальных восстановлений за 3 дня 0; `docker inspect smart-n8n`: StartedAt 2026-09-30 07:56:57Z, RestartCount 0; `127.0.0.1:5678/healthz` → 200. Юнита n8n в systemd нет, n8n только в Docker — guard охраняет реальный контейнер. Опровергнута. Мелочь P2: 174 строки журнала в час от guard (шум).
 
 ## H6. partner@replies
 
 **Факт:** юнит inactive/dead. `partner_agents.py`: пишет только `state='draft_unapproved'` (стр. 321, 329); отправка — `approve_batch` (398) → `stage_approved_batch` (406), требует `state=approved`. Отправлено 0. Опровергнута: автоответов клиентам нет.
 **Исправление:** не требуется. Зафиксировать политику «только черновики» (решение владельца, §7 п.10).
 
+**Перепроверка 02.10** (evidence/step84-b6-recheck-20261002.raw.txt, evidence/step84c-b6-extra-20261002-1804.txt; читался только код, тексты клиентов — нет): `partner@replies` запускает `ilya-business-partner-replies.timer` (~5 мин), User=smart-business, `partner_agents.py` mtime 27.09 12:15 (без изменений). Ветка `replies` (стр. 628–632): только `poll_gmail_replies` и локальный анализ (`submit_reply_reviews`), вызова отправки нет. Единственный путь к SMTP — `dispatch_deliveries` (стр. 451): вызывается только из ветки `proposals` (стр. 623), берёт только `proposal_deliveries.state='ready'` (после ручных `approve_batch` → `stage_approved_batch`) и только при `BUSINESS_SEND_ENABLED=="true"`. Ни один таймер `approve_batch` не вызывает. Флаг сейчас `false`.
+**Вывод:** опровергнута, автоответов нет; защита двойная (ручное одобрение + флаг). **Гипотеза-риск:** при включении флага все уже одобренные `ready` уйдут по таймеру proposals — это ожидаемое поведение. P2: закрепить «только черновики» в CONSTITUTION, показывать число `ready` на доске. **От владельца:** политика ответов клиентам (§7).
+
 ## H7. sender при выключенной отправке
 
 **Факт:** timer каждую минуту запускает `pipeline.py sender`; стр. 196 `send(..., enabled=os.environ.get('BUSINESS_SEND_ENABLED')=='true')`, иначе возвращает `{'state':'disabled','sent':0}`. Env из `/etc/ilya-business/workers.env` (не читался).
 **Влияние:** ~1440 холостых запусков в сутки, шум в журнале; статус «выключен» не виден в systemctl.
 **Исправление:** P2 — при выключенной отправке держать таймер disabled; флаг и таймер синхронизировать. **Критерий:** 0 запусков sender при BUSINESS_SEND_ENABLED≠true. **Откат:** `systemctl enable --now ilya-business-sender.timer`. **От владельца:** согласие.
+
+**Перепроверка 02.10 18:00 МСК** (evidence/step84-b6-recheck-20261002.raw.txt): `ilya-business-sender.timer` active/enabled, OnUnitActiveSec=1min, RandomizedDelaySec=15; за 60 мин 96 строк Started/Finished/Deactivated (≈1 прогон в минуту); каждый прогон пишет `{"state": "disabled", "sent": 0}`. В `/etc/ilya-business/workers.env` (прочитан только этот флаг) `BUSINESS_SEND_ENABLED=false`, mtime 26.09. `pipeline.py` стр. 153 и 196 без изменений с 26.09.
+**Вывод:** подтверждена. Вреда нет: шум и ~1440 холостых запусков Python в сутки. Исправление P2: `systemctl disable --now ilya-business-sender.timer`, пока флаг false; при включении отправки — включить таймер. **Критерий:** за 1 ч 0 запусков sender при флаге false. **Откат:** `systemctl enable --now ilya-business-sender.timer`. **От владельца:** «да».
 
 ## H8. Доска в интернете через Tailscale Funnel
 
@@ -141,6 +152,9 @@
 **Факт:** `20auto-upgrades`: Update-Package-Lists "1", Unattended-Upgrade "1"; apt-daily-upgrade ежедневно ~06:30. Обновлялись: 27.09 libsqlite3, rsyslog, polkitd; 29.09 python3-jwt, python3-requests, libevent-core. Настройки Automatic-Reboot/needrestart не найдены (grep пуст).
 **Гипотеза:** обновление libsqlite3/python3-* без перезапуска служб — старые библиотеки в памяти; перезапуски не доказаны.
 **Исправление:** P2 — оставить только security-обновления, окно в ночное время, журнал перезапусков. **От владельца:** политика обновлений.
+
+**Перепроверка 02.10** (evidence/step84-b6-recheck-20261002.raw.txt, evidence/step84c-b6-extra-20261002-1804.txt): `Allowed-Origins` — только `-security` (noble-security, ESM apps/infra security); `apt-daily-upgrade.timer` ежедневно 06:39–06:43; `needrestart` не установлен, Automatic-Reboot не задан. Последнее обновление 01.10 06:15:39–06:15:43 (openssl/libssl3t64/libssl-dev, libheif, libauthen-sasl-perl); 02.10 — «No packages found». В 20 мин после обновления — только обычные таймерные oneshot (knowledge/context/entity-refresh, partner, channels, packagekit), остановок основных служб нет. Основные службы стартовали 30.09 10:56 (загрузка) или 02.10 17:48 (controller, local-ai — вручную, шаг 79), NRestarts=0. Процессов со старой (deleted) libssl/libcrypto/libsqlite3: 0.
+**Вывод:** перезапусков служб автообновлениями нет — опровергнута. Обратный риск (гипотеза): без needrestart службы после security-обновления могут держать старую библиотеку; сейчас таких 0. P2: оставить security-only; в почасовой аудит добавить счётчик процессов с `(deleted)` библиотеками. **Критерий:** счётчик на доске, 0 после каждой ночи. **Откат:** не требуется. **От владельца:** подтвердить политику security-only.
 
 ## H11. smart-vpn
 
