@@ -1,0 +1,9 @@
+# ask/ — наружу только api.php; Basic-вход наследуется от корня доски.
+Options -Indexes
+<FilesMatch "^(?!api\.php$).*">
+  Require all denied
+</FilesMatch>
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Cache-Control "no-store"
+</IfModule>

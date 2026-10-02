@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; manifest-src 'self'; worker-src 'self'; base-uri 'none'; form-action 'none'">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#fbfaf3" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#101317" media="(prefers-color-scheme: dark)">
+<title>ILYA CORE · Рабочая доска</title>
+<link rel="stylesheet" href="styles.css?v=3">
+<link rel="stylesheet" href="arch.css?v=4">
+<link rel="stylesheet" href="ask.css?v=4">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-180.png">
+</head><body>
+<a class="skip" href="#main">К содержимому</a>
+<header class="bar">
+  <p class="brand">ILYA CORE <small>Рабочая доска · v0.3</small></p>
+  <nav class="tabs" aria-label="Вкладки">
+    <a class="tab" href="./" aria-current="page">Текущая работа</a>
+    <a class="tab" href="#architecture" id="tab-arch">Архитектура</a>
+    <a class="tab" href="#ask" id="tab-ask">Спросить</a>
+  </nav>
+  <span class="upd" id="upd" aria-live="off">данные: —</span>
+  <button type="button" class="btn" id="theme" aria-label="Тема оформления">Тема: авто</button>
+</header>
+
+<main id="main" tabindex="-1">
+  <div id="banner" class="banner" hidden role="alert"></div>
+
+  <section id="overview" class="overview g unknown" aria-labelledby="ov-head">
+    <div class="lamp" aria-hidden="true" id="ov-lamp"></div>
+    <h2 id="ov-head" aria-live="polite">Загрузка…</h2>
+    <p id="ov-sub"></p>
+    <p class="honest" id="ov-honest"></p>
+    <div class="actions no-print">
+      <form class="goto" id="goto" role="search">
+        <label class="sr" for="q">Найти карточку</label>
+        <input id="q" type="search" placeholder="Найти: qa, шлюз, waiting…" autocomplete="off">
+        <button type="submit" class="btn">Найти</button>
+      </form>
+      <button type="button" class="btn" id="refresh">Обновить</button>
+      <button type="button" class="btn" id="copy">Скопировать для Claude</button>
+    </div>
+  </section>
+
+  <textarea id="export-out" class="export" hidden readonly rows="10" aria-label="Состояние текстом"></textarea>
+
+  <section class="sec" aria-labelledby="res-h">
+    <h2 id="res-h">Ресурсы сервера</h2>
+    <p class="note">Только то, что есть в status.json. «Нет данных» — поле пока не собирается (план коллектора в README).</p>
+    <div class="tiles" id="tiles"></div>
+  </section>
+
+  <section class="sec" aria-labelledby="work-h">
+    <h2 id="work-h">Работа по контурам</h2>
+    <div class="pills no-print" id="chips" role="group" aria-label="Фильтр по контуру"></div>
+    <div id="groups"></div>
+  </section>
+
+  <section class="sec" id="ask-section" aria-labelledby="ask-section-h">
+    <div id="ask-container"></div>
+  </section>
+
+  <section class="sec arch" id="architecture" aria-labelledby="arch-h">
+    <h2 id="arch-h">Архитектура <span class="n">карта · v0.1</span></h2>
+    <p class="note">Связь на карте — возможный путь данных, а не факт выполнения. Свет бежит только по связи с реальным событием
+      (результат не старше 15 мин); остальные связи статичны — «нет потока».</p>
+    <div class="arch-tools no-print">
+      <form class="goto" id="arch-find" role="search">
+        <label class="sr" for="arch-q">Найти компонент</label>
+        <input id="arch-q" type="search" placeholder="Компонент (Ctrl K): шлюз, restic…" autocomplete="off">
+        <button type="submit" class="btn">Найти</button>
+      </form>
+      <div class="zoom" role="group" aria-label="Масштаб">
+        <button type="button" class="btn" id="arch-out" aria-label="Уменьшить">−</button>
+        <button type="button" class="btn" id="arch-zoom" aria-label="Сбросить масштаб">100%</button>
+        <button type="button" class="btn" id="arch-in" aria-label="Увеличить">+</button>
+      </div>
+      <button type="button" class="btn" id="arch-anim" aria-pressed="true">Анимация: вкл</button>
+    </div>
+    <div id="arch-err" class="banner fail" hidden role="alert"></div>
+    <div class="arch-body">
+      <div class="arch-canvas g"><svg id="arch-svg" role="group" aria-label="Карта компонентов сервера"></svg></div>
+      <aside class="arch-panel g" id="arch-panel" aria-live="polite"></aside>
+    </div>
+    <div class="arch-path g no-print">
+      <label for="arch-path">Путь задачи</label>
+      <select id="arch-path"></select>
+      <button type="button" class="btn" id="arch-show" aria-pressed="false">Показать маршрут</button>
+    </div>
+    <ul class="legend" aria-label="Легенда">
+      <li><span class="st ok">Работает</span></li><li><span class="st warn">Внимание</span></li>
+      <li><span class="st fail">Ошибка</span></li><li><span class="st unknown">Нет данных</span></li>
+      <li><span class="lg flow"></span>поток по событию</li><li><span class="lg still"></span>нет потока</li>
+    </ul>
+    <p class="note" id="arch-foot"></p>
+  </section>
+
+  <footer class="foot">Цвет — по давности полезного результата, а не по «служба active». Зелёный только при доказательстве;
+    без него — «не подтверждено». История хранится только в этом браузере.</footer>
+</main>
+<script src="logic.js?v=3"></script>
+<script src="monitor.js?v=3"></script>
+<script src="arch.js?v=4"></script>
+<script src="ask.js?v=4"></script>
+</body></html>
