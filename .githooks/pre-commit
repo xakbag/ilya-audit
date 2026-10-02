@@ -1,0 +1,46 @@
+#!/bin/sh
+# Проверка секретов и ПДн в добавляемых строках (ilya-audit).
+# Включить: git config core.hooksPath .githooks
+# Ложное срабатывание: допишите в строку пометку  secret-ok
+# Значения найденного НЕ печатаются — только файл, строка и тип.
+
+pat_key='BEGIN [A-Z ]*PRIVATE KEY'
+pat_tok='(sk-[A-Za-z0-9_-]{20,}|sk-ant-[A-Za-z0-9_-]{20,}|ghp_[A-Za-z0-9]{30,}|github_pat_[A-Za-z0-9_]{30,}|gho_[A-Za-z0-9]{30,}|xox[abpr]-[A-Za-z0-9-]{10,}|AKIA[0-9A-Z]{16}|AIza[0-9A-Za-z_-]{30,}|[0-9]{8,10}:AA[0-9A-Za-z_-]{30,})'
+pat_pwd='(password|passwd|пароль|secret|api[_-]?key|token|WRITE_KEY)["'"'"' ]*[:=]["'"'"' ]*[^ "'"'"'$<{\[]{6,}'
+pat_netrc='login[[:space:]]+[^[:space:]]+[[:space:]]+password[[:space:]]+[^[:space:]]{4,}'
+pat_mail='[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}'
+pat_phone='(\+7|(^|[^0-9])8)[ (-]?9[0-9]{2}[ )-]?[0-9]{3}[ -]?[0-9]{2}[ -]?[0-9]{2}([^0-9]|$)'
+mail_ok='(noreply@anthropic\.com|@example\.(com|org)|@users\.noreply\.github\.com)'
+
+found=0
+tmp=$(mktemp)
+git diff --cached --no-color -U0 --diff-filter=ACMR > "$tmp"
+file=''; line=0
+while IFS= read -r l; do
+  case "$l" in
+    '+++ b/'*) file=${l#+++ b/}; continue ;;
+    '@@ '*) line=$(printf '%s' "$l" | sed -E 's/^@@ -[0-9,]+ \+([0-9]+).*/\1/'); continue ;;
+    '+'*) ;;
+    *) continue ;;
+  esac
+  text=${l#+}
+  case "$text" in *secret-ok*) line=$((line+1)); continue ;; esac
+  kind=''
+  if printf '%s' "$text" | grep -Eq "$pat_key"; then kind='приватный ключ'
+  elif printf '%s' "$text" | grep -Eq "$pat_tok"; then kind='токен'
+  elif printf '%s' "$text" | grep -Eiq "$pat_pwd"; then kind='пароль/ключ'
+  elif printf '%s' "$text" | grep -Eq "$pat_netrc"; then kind='пароль (netrc)'
+  elif printf '%s' "$text" | grep -Eo "$pat_mail" | grep -Evq "$mail_ok"; then kind='e-mail'
+  elif printf '%s' "$text" | grep -Eq "$pat_phone"; then kind='телефон'
+  fi
+  if [ -n "$kind" ]; then echo "  $file:$line — похоже на: $kind"; found=$((found+1)); fi
+  line=$((line+1))
+done < "$tmp"
+rm -f "$tmp"
+
+if [ "$found" -gt 0 ]; then
+  echo "pre-commit: найдено подозрительных строк: $found. Коммит остановлен."
+  echo "Уберите значения (замените на [REDACTED]) или, если это не секрет, допишите в строку: secret-ok"
+  exit 1
+fi
+exit 0
