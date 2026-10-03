@@ -54,7 +54,7 @@
     {"id": "d7-paving-hh", "q": "Дом 7 брусчатка, человеко-часы",
      "expect": {"status": "ok", "values": [750], "unit": "ч/ч", "must_not": [2500, 1500]}},
     {"id": "d9-roof", "q": "Дом 9 устройство кровли за м²",
-     "expect": {"status": "refuse", "reason": "unknown_object", "must_not": [3500]}},
+     "expect": {"status": "refuse", "reason": "unknown_work", "must_not": [3500]}},
     {"id": "d8-terrace", "q": "Дом 8 террасная доска за м²",
      "expect": {"status": "refuse", "reason": "unknown_work", "must_not": [3500, 4000]}},
     {"id": "no-obj-roof", "q": "Устройство кровли за м²",
