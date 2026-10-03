@@ -55,6 +55,16 @@ class RatesTest(unittest.TestCase):
         self.assertEqual(a.status, "conflict")
         self.assertEqual(sorted(a.as_dict()["values"]), [3500, 4000])
 
+    def test_b35c_unit_variants(self):
+        # fix1: «п.м.» в данных = «м»; варианты записи единиц в вопросе
+        r = dict(object="дом 1", work="x", document="d", version="1", date="2026-01-01")
+        t = RateTable([Rate(unit="п.м.", value=600, **r), Rate(unit="м²", value=900, **r)])
+        self.assertEqual(t.answer("дом 1", "x", "м").values[0].value, 600)
+        for q in ("дом 1 x за метр погонный", "дом 1 x, м.п.", "дом 1 x за пог. м", "дом 1 x, руб/п.м."):
+            self.assertEqual(t.ask(q).as_dict()["values"], [600], q)
+        for q in ("дом 1 x за кв. м", "дом 1 x, квадратный метр", "дом 1 x за м.кв", "дом 1 x кв.м."):
+            self.assertEqual(t.ask(q).as_dict()["values"], [900], q)
+
     def test_eval_set_all_pass(self):
         m = run_eval.run(HERE / "sample-rates.json", HERE / "eval-set-sample.json")
         self.assertEqual(m["fails"], [], m["fails"])
