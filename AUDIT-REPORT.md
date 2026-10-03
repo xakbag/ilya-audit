@@ -368,6 +368,7 @@
 - **Старые копии в корне:** `index.old-20261002-2013.html`, `index.old-20261003-1407.html` (под входом), `monitor.old-…js`, `arch.old-…js/.css` (открыты). Не удалялись.
 - **Клиенты:** публикатор пишет status.json по SFTP (netrc), Basic не использует; `board-alert` в dry-run. Удаление «1» их не затронет. status.json свежий (публикация каждую минуту).
 - **Не сделано:** удаление «1» = доска без единого входа. Готов `steps/step105-board-htpasswd.sh` (APPLY=0): бэкап `.htpasswd.old-<TS>`, новый логин `ilya` со случайным паролем (файл 600 на сервере + Документы Ильи), удаление «1», проверка 200/401, автооткат. **Нужно «да»** на замену «1» → `ilya`.
+- **B34b ВЫПОЛНЕНО 03.10.2026 19:42 МСК** («да» Ильи; `steps/step107-board-htpasswd.sh`, `evidence/step107-board-htpasswd-20261003-1942.txt`): «1» удалён, логин `ilya` со случайным паролем. ПОСЛЕ: ilya → 200 на `/`, `/status.json`, `/ask-api.php?action=ping`, `/dark/`; `1:1` и без входа → 401. status.json обновляется (16:42:58Z → 16:44:00Z), публикатор success. Пароль только в `/root/board-owner-login.txt` (600) и `Documents\board-login-ai-ilya.txt` (icacls: только Ilya). Старые `*.old-*` не удалялись. Откат: SFTP `rm .htpasswd; rename .htpasswd.old-20261003-194232 .htpasswd`.
 
 ## B35: маршрут ставок `rates.py` в Core за выключенным флагом (03.10.2026, 19:30–19:50 МСК)
 **Часть 1. Фиксация версии** (`docs/b35-core-rates-route.md`):  
