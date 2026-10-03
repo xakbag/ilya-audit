@@ -80,6 +80,17 @@ class RatesTest(unittest.TestCase):
         self.assertIn("3300 руб/м", a.text)
         self.assertEqual(t.answer("дом 1", "x", "шт").as_dict()["values"], [21739.13])
 
+    def test_b35c_undated_different_value_is_conflict(self):
+        r = dict(object="дом 1", work="x", unit="м²", document="d")
+        t = RateTable([Rate(value=350, version="1", date="", **r),
+                       Rate(value=700, version="2", date="", **r),
+                       Rate(value=350, version="3", date="2026-06-29", **r)])
+        a = t.answer("дом 1", "x", "м²")
+        self.assertEqual((a.status, sorted(a.as_dict()["values"])), ("conflict", [350, 700]))
+        # без даты, но то же значение — не конфликт
+        t2 = RateTable([Rate(value=350, version="1", date="", **r), Rate(value=350, version="3", date="2026-06-29", **r)])
+        self.assertEqual(t2.answer("дом 1", "x", "м²").status, "ok")
+
     def test_eval_set_all_pass(self):
         m = run_eval.run(HERE / "sample-rates.json", HERE / "eval-set-sample.json")
         self.assertEqual(m["fails"], [], m["fails"])

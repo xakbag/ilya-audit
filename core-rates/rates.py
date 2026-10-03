@@ -127,6 +127,16 @@ class RateTable:
         latest = max(r.date for r in cand)
         top = sorted([r for r in cand if r.date == latest], key=lambda r: (r.version, r.value))
         older = sorted([r for r in cand if r.date < latest], key=lambda r: r.date)
+        if latest:
+            # B35c fix3: строку без даты нельзя упорядочить относительно датированных — она не «ранее».
+            # Если её значение отличается от последней версии — это конфликт, выбор за владельцем.
+            undated = [r for r in older if not r.date]
+            older = [r for r in older if r.date]
+            seen = {r.value for r in top}
+            for r in undated:
+                if r.value not in seen:
+                    top.append(r)
+                    seen.add(r.value)
         if len({r.value for r in top}) > 1:
             text = (f"Конфликт версий ({obj}, {work}, руб/{u}): "
                     + "; ".join(_line(r) for r in top)
