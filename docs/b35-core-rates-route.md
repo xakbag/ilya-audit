@@ -58,3 +58,32 @@
 
 **Следующий шаг:** написать `step106-core-rates-route.sh`, проверить синтаксис, применить с --dry-run, показать владельцу план.
 
+## Часть 3, итог (B35b, 03.10.2026 19:42–19:49 МСК) — УСТАНОВЛЕНО, флаг off
+«Да» Ильи 03.10: подготовка и установка с флагом off.
+**Скрипт:** шаблон `steps/step106-core-rates-route.sh` + генератор `steps/gen-step106.py <--dry-run|--apply|--rollback>` → `steps/step106-core-rates-route.run.sh` (rates.py/rates.json вкладываются gzip+base64, на сервере сверка sha256). `steps/*.sh` в `.gitignore` — скрипты только локально, в Git генератор.
+**Отличия от плана:** флаг через drop-in `/etc/systemd/system/smart-core.service.d/rates-route.conf` (основной юнит не правился); `rates.py` → `root:smart-core 0640`; маршрут срабатывает только для проекта «Монплезир Переделкино 2 очередь» или пустого проекта, только для не-финансовых вопросов, `refuse`/ошибка → прежний путь knowledge. Врезка учитывает смешанные CRLF/LF в core.py (первый dry-run упал на `ANCHOR_NOT_UNIQUE`, исправлено).
+**Проверки (ФАКТ):**
+- разведка `evidence/step106c-core-rates-recon-20261003.txt`: core.py sha256 `50327d90…` (не менялся с 27.09), задач в очереди/работе 0;
+- `bash -n` на сервере: `BASH_N_OK`; py_compile rates.py и нового core.py: OK;
+- сравнение `execute()` старого и нового core.py в отдельном процессе (`evidence/step106-dryrun3-20261003.txt`): 5 контрольных вопросов (ставка м², ставка руб/м², финансовый, не-ставочный, частичное совпадение) × флаг unset/off — 10/10 идентичны; реальный вызов бэкенда `/api/search` — идентичен; проверка пути `on` в том же процессе (служба не затронута): «террасная доска м², дом 10» → `mode=rates`, `conflict`, [3500, 4000]; не-ставочный вопрос → прежний путь;
+- diff core.py: 20 добавленных строк, удалённых 0.
+**Apply 19:48:27** (`evidence/step106-apply-20261003.txt`): бэкап `core.py.bak-20261003-194827`; ДО: active, PID 163, healthz 200, tasks completed 42/failed 1/cancelled 3; ПОСЛЕ: active, PID 672320, NRestarts 0, healthz 200, задачи без изменений, core.py sha256 `84b57aeb…`, `Environment=… CORE_RATES_ROUTE=off`.
+**Пост-проверка 19:48:49** (`evidence/step106p-postcheck-20261003.txt`): active, healthz 200, failed-юнитов smart-core 0, ошибок в журнале за 10 мин нет, у работающего процесса `CORE_RATES_ROUTE=off`.
+**Откат:** `python steps/gen-step106.py --rollback` и запуск `.run.sh`; вручную: `cp -p /srv/smart-server/core/app/core.py.bak-20261003-194827 /srv/smart-server/core/app/core.py; rm /etc/systemd/system/smart-core.service.d/rates-route.conf /srv/smart-server/core/app/rates.py /srv/smart-server/core/data/rates.json; systemctl daemon-reload; systemctl restart smart-core`.
+**Включение on** — отдельное согласование (правка drop-in на `on` + restart).
+
+## Часть 4: предложение правки rates.py (НЕ применено, боевой rates.py не менялся)
+Файл: `core-rates/proposal/rates.py` (копия + 3 правки): алиасы единиц `к-т`/`ч/ч`/`раб` в `UNIT_ALIASES`; распознавание этих единиц в вопросе (`parse`: «комплект», «человеко-час», «за работу»); `norm_work` убирает завершающую точку.
+**Прогон** (`evidence/b35c-proposal-blind-eval-20261003.json`):
+
+| набор | текущий | предложение |
+|---|---|---|
+| слепой, overall | 0.30 | 0.40 |
+| слепой, answer / refusal | 0.20 / 0.80 | 0.32 / 0.80 |
+| слепой, без ошибочной проверки дат | 0.70 | **0.80** |
+| основной eval-set (регрессия) | 1.0 | 1.0 |
+
+Прогноз 80% подтверждается только без проверки дат. **Находка:** 12 из 18 провалов — ошибка эталона слепого набора, а не `rates.py`: в `text_has` даты записаны как «ММ.ДД» («02.18», «04.03»), а ответ и `run_eval._date_ru` дают «ДД.ММ» («18.02.2026»). Эталон нужно поправить (решение владельца: это меняет «слепой» набор).
+**Реальные провалы после правки (6):** конфликт версий не виден, когда старое значение отличается (`d11-posts-m-conflict`, `d7-putty-m2`, `d10-formwork-beam-m` — отдаётся только последняя версия); смешаны значения при 3 версиях (`d10-slab-m3-3versions`); округление 21739.13 (`d12-cornice-fix-rab`, вопрос эталона/сравнения); «дом 9» → `unknown_work` вместо `unknown_object`.
+**Нужно «да»:** (1) перенести правку в `core-rates/rates.py` и на сервер (повтор step106 с новым sha); (2) исправить формат дат в эталоне `blind-set.json`; (3) отдельной задачей — логика конфликтов версий.
+
