@@ -1,8 +1,8 @@
-# ask/ — наружу только api.php; Basic-вход наследуется от корня доски.
+# ask/ — только api.php; данные вне веб-корня (~/ask-data).
+# Basic-вход корня сюда не наследуется (03.10: api.php 200 с неверным паролем),
+# поэтому step99h при выкладке дописывает сверху Auth*-строки из корневого .htaccess.
+# Здесь Require не писать — он придёт только вместе с AuthUserFile.
 Options -Indexes
-<FilesMatch "^(?!api\.php$).*">
-  Require all denied
-</FilesMatch>
 <IfModule mod_headers.c>
   Header always set X-Content-Type-Options "nosniff"
   Header always set Cache-Control "no-store"

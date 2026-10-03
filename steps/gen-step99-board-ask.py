@@ -18,29 +18,32 @@ def b64(p: Path, name: str) -> str:
 
 
 HOST_FILES = [("index.html", F / "index.html"), ("arch.js", F / "arch.js"), ("arch.css", F / "arch.css"),
-              ("ask.js", F / "ask.js"), ("ask.css", F / "ask.css"), ("api.php", F / "ask/api.php"),
-              ("ask.htaccess", F / "ask/.htaccess")]
+              ("ask.js", F / "ask.js"), ("ask.css", F / "ask.css"), ("ask-api.php", F / "ask/api.php")]
 
 hosting = ["set -u", "main(){", ". /etc/smart-monitor-publish.conf",
            "U=https://ai-ilya.ru; R=www/ai-ilya.ru; TS=$(date +%Y%m%d-%H%M)",
            "T=$(mktemp -d); cd \"$T\"",
            'ls1(){ curl -s -o /dev/null -w "%{http_code}" -u 1:1 "$U/$1"; }',
-           'echo "до: / $(ls1 "") ask/api.php $(ls1 ask/api.php)"']
+           'echo "до: / $(ls1 "") ask-api.php $(ls1 ask-api.php)"']
 hosting += [b64(p, n) for n, p in HOST_FILES]
 hosting += [
     "# бэкап изменяемых файлов (.old-TS), новые ask.* до этого не существовали",
-    'for f in index.html arch.js arch.css; do curl -sS --netrc-file "$NETRC" -Q "-rename $R/$f $R/${f%.*}.old-$TS.${f##*.}" "$REMOTE_URL" -o /dev/null && echo "бэкап $f"; done',
+    'for f in index.html arch.js arch.css; do curl -sS --netrc-file "$NETRC" -Q "rename $R/$f $R/${f%.*}.old-$TS.${f##*.}" "$REMOTE_URL" -o /dev/null && echo "бэкап $f"; done',
     "FAIL=0",
     'for f in index.html arch.js arch.css ask.js ask.css; do curl -sS --fail --netrc-file "$NETRC" -T "$f" "${REMOTE_URL}$f" || { echo "ОШИБКА $f"; FAIL=1; }; done',
-    'curl -sS --fail --ftp-create-dirs --netrc-file "$NETRC" -T api.php "${REMOTE_URL}ask/api.php" || FAIL=1',
-    'curl -sS --fail --netrc-file "$NETRC" -T ask.htaccess "${REMOTE_URL}ask/.htaccess" || FAIL=1',
+    '# api в корне доски: проще и без вложенного .htaccess',
+    'curl -sS --fail --netrc-file "$NETRC" -T ask-api.php "${REMOTE_URL}ask-api.php" || FAIL=1',
     "sleep 3",
     "# без Basic: 401 = файл на месте и закрыт входом; 404 = не выложен",
-    'for f in "" index.html ask.js ask.css ask/api.php; do c=$(ls1 "$f"); echo "$f $c"; [ "$c" = 200 ] || [ "$c" = 401 ] || FAIL=1; done',
+    'for f in "" index.html ask.js ask.css; do c=$(ls1 "$f"); echo "$f $c"; [ "$c" = 200 ] || [ "$c" = 401 ] || FAIL=1; done',
+    '# api.php: без входа и с неверным паролем обязано быть 401 (иначе очередь открыта всем)',
+    'c0=$(curl -s -o /dev/null -w "%{http_code}" "$U/ask-api.php?action=ping"); c1=$(curl -s -o /dev/null -w "%{http_code}" -u "chk$RANDOM:$RANDOM$RANDOM" "$U/ask-api.php?action=ping"); echo "api ping noauth=$c0 wrongauth=$c1"',
+    '[ "$c0" = 401 ] && [ "$c1" = 401 ] || FAIL=1',
     'if [ $FAIL = 0 ]; then echo "OK: вкладка «Спросить» выложена, бэкап .old-$TS"; else',
     '  echo "НЕ ОК -> откат"',
-    '  for f in index.html arch.js arch.css; do curl -sS --netrc-file "$NETRC" -Q "-rename $R/${f%.*}.old-$TS.${f##*.} $R/$f" "$REMOTE_URL" -o /dev/null; done',
-    '  curl -sS --netrc-file "$NETRC" -Q "-DELE $R/ask/api.php" "$REMOTE_URL" -o /dev/null',
+    '  for f in index.html arch.js arch.css; do curl -sS --netrc-file "$NETRC" -Q "rm $R/$f" -Q "rename $R/${f%.*}.old-$TS.${f##*.} $R/$f" "$REMOTE_URL" -o /dev/null && echo "вернул $f"; done',
+    '  curl -sS --netrc-file "$NETRC" -Q "rm $R/ask.js" -Q "rm $R/ask.css" "$REMOTE_URL" -o /dev/null',
+    '  curl -sS --netrc-file "$NETRC" -Q "rm $R/ask-api.php" "$REMOTE_URL" -o /dev/null',
     '  echo "после отката: / $(ls1 "")"',
     "fi",
     'cd /; rm -rf "$T"', "}", "main </dev/null; exit 0", ""]
@@ -117,7 +120,7 @@ server = ["set -u", "main(){", "TS=$(date +%Y%m%d-%H%M); U=/etc/systemd/system/s
           "chmod 600 $C/*; chown root:root $C/*",
           'FTPROOT="${REMOTE_URL%www/ai-ilya.ru/}"',
           'curl -sS --fail --ftp-create-dirs --netrc-file "$NETRC" -T $C/board-ask-token "${FTPROOT}ask-data/token.txt" -o /dev/null && echo "токен на хостинге: ok" || { echo "СТОП: токен не залит"; return 1; }',
-          'curl -sS --netrc-file "$NETRC" -Q "SITE CHMOD 600 ask-data/token.txt" -Q "SITE CHMOD 700 ask-data" "$FTPROOT" -o /dev/null || echo "chmod на хостинге не поддержан — проверить вручную"',
+          'curl -sS --netrc-file "$NETRC" -Q "chmod 600 ask-data/token.txt" -Q "chmod 700 ask-data" "$FTPROOT" -o /dev/null || echo "chmod на хостинге не поддержан — проверить вручную"',
           "# 4. юнит",
           f"cat > $U <<'UNIT'\n{UNIT}UNIT",
           "systemd-analyze verify $U 2>&1 | tail -n 5",

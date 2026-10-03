@@ -20,8 +20,8 @@ const MAX_WAIT = 25;         // long-poll, сек
 const MAX_QUEUED = 200;      // защита диска
 
 function data_dir(): string {
-    // www/ai-ilya.ru/ask/api.php -> ~/ask-data (не раздаётся веб-сервером)
-    $d = getenv('ASK_DATA') ?: dirname(__DIR__, 3) . '/ask-data';
+    // выкладывается как www/ai-ilya.ru/ask-api.php (в корне доски, под её Basic-входом) -> ~/ask-data (не раздаётся веб-сервером)
+    $d = getenv('ASK_DATA') ?: dirname(__DIR__, 2) . '/ask-data';
     if (!is_dir($d)) @mkdir($d, 0700, true);
     return $d;
 }

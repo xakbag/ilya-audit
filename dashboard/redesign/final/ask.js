@@ -1,4 +1,4 @@
-// ask.js — вкладка «Спросить» (B25). PULL-модель: браузер кладёт вопрос в ask/api.php на хостинге,
+// ask.js — вкладка «Спросить» (B25). PULL-модель: браузер кладёт вопрос в ask-api.php на хостинге,
 // сервер сам забирает его исходящим запросом и возвращает ответ. Данные — только textContent, CSP 'self'.
 // Чистая логика (AskLogic) экспортируется для node:test; DOM-часть запускается только в браузере.
 (function (root, factory) {
@@ -8,7 +8,7 @@
 })(typeof self !== "undefined" ? self : this, function () {
   "use strict";
 
-  const API = "ask/api.php", MAX_LEN = 1000, POLL_MS = 4000, HIST_KEY = "ilya-ask-history", HIST_MAX = 20;
+  const API = "ask-api.php", MAX_LEN = 1000, POLL_MS = 4000, HIST_KEY = "ilya-ask-history", HIST_MAX = 20;
   const INVIS = /[­​-‏‪-‮⁠-⁩﻿]/g;
   const EXAMPLES = [
     "Что сейчас делает сервер?",

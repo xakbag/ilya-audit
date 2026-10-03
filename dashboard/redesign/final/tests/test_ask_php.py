@@ -31,7 +31,7 @@ class TestApiPhp(unittest.TestCase):
         self.assertIn("HTTP_X_ASK_TOKEN", auth)
 
     def test_token_and_data_outside_webroot(self):
-        self.assertIn("dirname(__DIR__, 3) . '/ask-data'", SRC)
+        self.assertIn("dirname(__DIR__, 2) . '/ask-data'", SRC)
         self.assertIn("/token.txt", SRC)
         self.assertNotRegex(SRC, r"[A-Za-z0-9]{32,}")  # токен не зашит в код
 
@@ -76,10 +76,12 @@ class TestApiPhp(unittest.TestCase):
         self.assertIn("Cache-Control: no-store", SRC)
         self.assertIn("display_errors', '0'", SRC)
 
-    def test_htaccess_denies_data(self):
+    def test_htaccess_keeps_parent_auth(self):
         ht = (Path(__file__).resolve().parent.parent / "ask" / ".htaccess").read_text(encoding="utf-8")
         self.assertIn("Options -Indexes", ht)
-        self.assertRegex(ht, r"FilesMatch")
+        # Require в подкаталоге отменяет Basic-вход корня (факт хостинга 03.10)
+        code = [l for l in ht.splitlines() if not l.lstrip().startswith("#")]
+        self.assertFalse(any("Require" in l for l in code))
 
 
 if __name__ == "__main__":
