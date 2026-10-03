@@ -187,7 +187,7 @@ const I={ru:{title:'Журнал работ — Дом 2',f_mine:'Мои',print:
 uz:{title:'Ishlar jurnali — Uy 2',f_mine:'Meniki',print:'Chop etish',all:'Hammasi',list:'Vazifalar',supply:'Ta’minot',search:'Vazifa, material, ijrochi bo‘yicha qidirish…',exec:'Ijrochi',zone:'Hudud',status:'Holat',mat:'Materiallar',sort:'Saralash',sId:'Raqam bo‘yicha',sDl:'Muddat bo‘yicha',sPr:'Ustuvorlik bo‘yicha',sSt:'Holat bo‘yicha',total:'Jami vazifalar',buy:'Xarid kerak',q:'Savol bor',late:'Muddati o‘tgan',noDl:'Muddatsiz',f_buy:'xarid kerak',f_q:'savol bor',f_late:'muddati o‘tgan',deadline:'Muddat',prio:'Ustuvorlik',set:'Qo‘yilgan sana',resp:'Mas’ul',type:'Ish turi',cat:'Toifa',purch:'Xarid',comm:'Izoh',none:'ko‘rsatilmagan',bought:'sotib olingan',item:'Nima sotib olish kerak',forTasks:'Vazifalar',pend:'Ilyaning tuzatishi jadvalga hali kiritilmagan',sn:'«Sotib olingan» belgisi faqat shu brauzerda saqlanadi.',foot:'Ma’lumotlar — 30.09.2026 holatidagi reyestr nusxasi. Bu saytdagi tuzatishlar faqat brauzerda saqlanadi; Google-jadvalga yozish Ilya alohida qarori bilan yoqiladi.',high:'Yuqori',mid:'O‘rta',low:'Past',shown:'Ko‘rsatilgan',ofN:'dan',noBuy:'Xaridlar yo‘q',inwork:'Jarayonda',done:'Tayyor',copy:'Ro‘yxatni nusxalash',copied:'Nusxalandi',doneN:'bajarilgan',forT:'uchun',
  stNew:'Yangi',stDone:'Bajarildi',markDone:'Bajarildi',edit:'Tahrirlash',editT:'Vazifa',save:'Saqlash',cancel:'Bekor qilish',resetAll:'Tuzatishlarni bekor qilish',resetQ:'Vazifani reyestr ma’lumotlariga qaytarish?',orig:'reyestrdagidek',edited:'o‘zgartirilgan',undo:'Qaytarish',doneMsg:'bajarilgan deb belgilandi',saved:'O‘zgarishlar saqlandi',highN:'Yuqori ustuvorlik',taskF:'Vazifa',floor:'Qavat / hudud',room:'Xona',gm:'Xayrli tong',gd:'Xayrli kun',ge:'Xayrli kech',reset:'Tuzatishlar bekor qilindi'}};
 // Значения поля «Статус/материалы» на узбекском — только из листа переводов; остальные поля (имена, ID, числа, единицы) не переводятся.
-const T=window.TASKS;
+const ALL=window.TASKS;let T=ALL;function scopeT(){T=ALL.filter(x=>!curObj||x.object===curObj)}
 Object.assign(I.ru,{byZone:'Прогресс по зонам',team:'Исполнители',tasksN:'Задач',ready:'Готово',notSt:'Не начато',lateS:'Просрочка',ofAll:'от всех',tapEx:'нажмите — покажу задачи',allEx:'Все исполнители'});
 Object.assign(I.ru,{f_arch:'Архив',matT:'Материалы',noMat:'Материалы не указаны',addMat:'Добавить',matPh:'Название материала',roMsg:'Только просмотр: без кода правки не сохраняются',syncErr:'Нет связи с сервером — правка не сохранена'});
 Object.assign(I.uz,{f_arch:'Arxiv',matT:'Materiallar',noMat:'Materiallar ko‘rsatilmagan',addMat:'Qo‘shish',matPh:'Material nomi',roMsg:'Faqat ko‘rish: tahrirlash kalitli havola orqali',syncErr:'Server bilan aloqa yo‘q — saqlanmadi'});
@@ -201,7 +201,7 @@ const $=id=>document.getElementById(id),t=k=>I[L][k]??I.ru[k]??k;
 const S=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}};
 let ed=S('ed',{}),bought=S('bought',{});
 // Задачи, созданные на сайте (голос/текст), хранятся в localStorage 'nt'
-const NT=S('nt',[]);NT.forEach(x=>{x.uz=x.uz||{};if(!T.some(y=>y.task_id===x.task_id))T.push(x)});
+const NT=S('nt',[]);NT.forEach(x=>{x.uz=x.uz||{};if(!ALL.some(y=>y.task_id===x.task_id))ALL.push(x)});
 const saveNT=()=>{try{localStorage.setItem('nt',JSON.stringify(NT))}catch(_){}};
 // Общие правки: сервер api.php (GET — все видят, POST — нужна сессия или старый WRITE_KEY)
 const API='api.php';
@@ -308,7 +308,7 @@ const OBJ_ICONS={
   'Переделкино-2':'<svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v10h-6v-5H9v5H3V11zm2 1.7V19h2v-5h10v5h2v-6.3l-7-5.4-7 5.4z"/></svg>',
   'Переделкино-3':'<svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v10h-5v-6h-8v6H3V11zm2 1.7V19h2v-6h10v6h2v-6.3l-7-5.4-7 5.4z"/></svg>'
 };
-function setCurrentObject(obj){curObj=obj;try{localStorage.setItem('curObj',obj||'')}catch(_){}renderObjSwitch();refresh();}
+function setCurrentObject(obj){curObj=obj;try{localStorage.setItem('curObj',obj||'')}catch(_){}renderObjSwitch();ui();}
 function renderObjSwitch(){
   const sel=curObj||'';
   $('objSwitch').innerHTML=OBJECTS.map(o=>'<button data-obj="'+o.replace(/"/g,'&quot;')+'" class="'+(sel===o?'on':'')+'">'+(OBJ_ICONS[o]||'')+o+'</button>').join('');
@@ -316,11 +316,11 @@ function renderObjSwitch(){
 }
 $('objSwitch').onclick=e=>{const b=e.target.closest('[data-obj]');if(b)setCurrentObject(b.dataset.obj)};
 try{curObj=localStorage.getItem('curObj')||null}catch(_){}
-if(curObj&&!OBJECTS.includes(curObj))curObj=null;renderObjSwitch();
+if(curObj&&!OBJECTS.includes(curObj))curObj=null;renderObjSwitch();scopeT();
 function applyState(st){if(!st||typeof st!=='object')return;online=true;
  ed=st.ed&&typeof st.ed==='object'?st.ed:{};bought=st.bought&&typeof st.bought==='object'?st.bought:{};
  photos=st.photos&&typeof st.photos==='object'?st.photos:{};
- (st.nt||[]).forEach(x=>{if(!T.some(y=>y.task_id===x.task_id)){x.uz={};x.pending=false;T.push(x)}});
+ (st.nt||[]).forEach(x=>{if(!ALL.some(y=>y.task_id===x.task_id)){x.uz={};x.pending=false;T.push(x)}});
  save();try{localStorage.setItem('bought',JSON.stringify(bought))}catch(_){}}
 async function pull(){if(location.protocol==='file:')return;try{const r=await fetch(API,{cache:'no-store'});if(!r.ok)return;const st=await r.json(),le=ed,lb=bought;applyState(st);
   // первый запуск: сервер пуст, а в этом браузере уже есть правки — переносим их на сервер
@@ -422,13 +422,13 @@ const ZN=()=>{const c={};T.forEach(x=>{const k=get(x,'floor_zone')||'—';c[k]=(
 function bars(f){const v=ZN().map(k=>T.filter(x=>(get(x,'floor_zone')||'—')===k&&f(x)).length),m=Math.max(1,...v);
  return '<span class="sp" aria-hidden="true">'+v.map(n=>'<i style="height:'+Math.max(10,Math.round(100*n/m))+'%"'+(n?'':' class="z0"')+'></i>').join('')+'</span>'}
 const lgd=()=>[['gd','stDone'],['gw','inwork'],['gn','stNew']].map(([c,k])=>'<span><i class="dot '+c+'"></i>'+esc(t(k))+'</span>').join('');
-function renderSum(){const N=T.length,n=f=>T.filter(f).length,dn=n(isDn),iw=n(KF.inw),nw=N-dn-iw,p=Math.round(100*dn/N);
+function renderSum(){const N=T.length,n=f=>T.filter(f).length,dn=n(isDn),iw=n(KF.inw),nw=N-dn-iw,p=Math.round(100*dn/Math.max(1,N));
  const lg=[['gd',t('stDone'),dn],['gw',t('inwork'),iw],['gn',t('stNew'),nw]].map(([c,l,v])=>'<li><i class="dot '+c+'"></i>'+esc(l)+'<b>'+v+'</b></li>').join('');
  const tiles=[['',t('total'),()=>true],['inw',t('inwork'),KF.inw],['hi',t('highN'),KF.hi],['buy',t('buy'),buy],['late',t('late'),late],['q',t('q'),isQ]];
  const tasks=T.slice().sort((a,b)=>a.task_id.localeCompare(b.task_id,undefined,{numeric:true}));
  const windows=tasks.slice(0,15).map(x=>'<rect x="0" y="0" width="12" height="10" rx="2" fill="'+(isDn(x)?'var(--y)':'var(--chip)')+'"/>').join('');
  $('sum').innerHTML='<div class="gauge"><svg viewBox="0 0 120 90" aria-hidden="true"><g transform="translate(30,20)"><path d="M30 0L60 20V60H0V20L30 0z" fill="var(--solid)" stroke="var(--bd)" stroke-width="2"/><g class="house-windows">'+tasks.slice(0,15).map((x,i)=>'<g transform="translate('+(8+(i%3)*18)+','+(28+Math.floor(i/3)*14)+')"><rect width="12" height="10" rx="2" fill="'+(isDn(x)?'var(--y)':'var(--chip)')+'"/></g>').join('')+'</g></g></svg><b>'+p+'%</b><span>'+t('doneN')+': '+dn+' '+t('ofN')+' '+N+'</span><ul class="glg">'+lg+'</ul></div>'
- +'<div class="tiles">'+tiles.map(([k,l,f])=>{const v=n(f);return '<button type="button" class="kpi'+(kf===k?' on':'')+'" data-k="'+k+'" aria-pressed="'+(kf===k)+'"><span class="kh">'+esc(l)+(k?'<em class="bdg">'+Math.round(100*v/N)+'%</em>':'')+'</span><b>'+v+'</b>'+bars(f)+'</button>'}).join('')+'</div>';
+ +'<div class="tiles">'+tiles.map(([k,l,f])=>{const v=n(f);return '<button type="button" class="kpi'+(kf===k?' on':'')+'" data-k="'+k+'" aria-pressed="'+(kf===k)+'"><span class="kh">'+esc(l)+(k?'<em class="bdg">'+Math.round(100*v/Math.max(1,N))+'%</em>':'')+'</span><b>'+v+'</b>'+bars(f)+'</button>'}).join('')+'</div>';
  renderProg();renderTeam()}
 function renderProg(){const id=(p,r)=>p.task_id.localeCompare(r.task_id,undefined,{numeric:true});
  $('prog').innerHTML='<div class="ph"><b>'+t('byZone')+'</b><span>'+T.filter(isDn).length+' / '+T.length+'</span></div><div class="segs">'+ZN().map(k=>{const a=T.filter(x=>(get(x,'floor_zone')||'—')===k).sort(id),d=a.filter(isDn).length;
@@ -454,7 +454,8 @@ function fillOpts(){
  opts($('fm'),t('mat'),uniq('materials_status'))}
 function greet(){const d=new Date(),h=d.getHours();let ds;try{ds=d.toLocaleDateString(L==='uz'?'uz-UZ':'ru-RU',{weekday:'long',day:'numeric',month:'long'})}catch(e){ds=today}
  $('hi').innerHTML='<b>'+t(h<12?'gm':h<18?'gd':'ge')+'</b>'+esc(ds)}
-function ui(){document.documentElement.lang=L;document.title=t('title');const h1=$('h1');h1.innerHTML=(OBJ_ICONS[curObj]||'')+esc(t('title'));h1.setAttribute('data-obj',curObj||'');$('lang').textContent=L==='ru'?'UZ':'RU';greet();
+function titleFor(){return t('title').replace(/Дом 2|Uy 2/,curObj||'Дом 2')}
+function ui(){scopeT();document.documentElement.lang=L;document.title=titleFor();const h1=$('h1');h1.innerHTML=(OBJ_ICONS[curObj]||'')+esc(titleFor());h1.setAttribute('data-obj',curObj||'');$('lang').textContent=L==='ru'?'UZ':'RU';greet();
  $('t1').textContent=t('list');$('t2').textContent=t('supply');$('q').placeholder=t('search');$('sn').textContent=t('sn');$('cp').textContent=t('copy');$('foot').textContent=t('foot');
  $('ms').textContent=t('save');$('mc').textContent=t('cancel');
  // Роли: скрыть кнопки по правам
@@ -463,7 +464,7 @@ function ui(){document.documentElement.lang=L;document.title=t('title');const h1
  const sv=$('so').value||'id';$('so').innerHTML=[['id','sId'],['dl','sDl'],['pr','sPr'],['st','sSt']].map(a=>'<option value="'+a[0]+'">'+t('sort')+': '+t(a[1])+'</option>').join('');$('so').value=sv;
  chips();renderSum();renderList();renderBuy()}
 // Перерисовка без потери раскрытых карточек и позиции прокрутки.
-function refresh(){const open=[...document.querySelectorAll('#list details[open]')].map(d=>d.dataset.id),y=scrollY;
+function refresh(){scopeT();const open=[...document.querySelectorAll('#list details[open]')].map(d=>d.dataset.id),y=scrollY;
  fillOpts();renderSum();renderList();renderBuy();
  document.querySelectorAll('#list details').forEach(d=>{if(open.includes(d.dataset.id))d.open=true});scrollTo(0,y)}
 let tt;function toast(m,undo){const el=$('toast');el.innerHTML='<span>'+esc(m)+'</span>'+(undo?'<button type="button" id="tu">'+t('undo')+'</button>':'');
@@ -628,10 +629,10 @@ $('ntf').onsubmit=async e=>{e.preventDefault();const txt=cleanTxt($('taskInput')
  const g=id=>$(id).value.trim(),ms=g('ap_mats').split('\n').map(x=>x.trim().replace(/[|]/g,' ')).filter(Boolean);
  const obj=curObj||'Дом 2';
  const prefix=OBJ_PREFIX[obj]||'D2-';
- const maxNum=Math.max(0,...T.filter(x=>x.task_id&&x.task_id.startsWith(prefix)).map(x=>+(/(\d+)$/.exec(x.task_id)||[0,0])[1]));
+ const maxNum=Math.max(0,...ALL.filter(x=>x.task_id&&x.task_id.startsWith(prefix)).map(x=>+(/(\d+)$/.exec(x.task_id)||[0,0])[1]));
  const nextId=prefix+String(maxNum+1).padStart(3,'0');
  const newTask={task_id:nextId,object:obj,floor_zone:g('ap_zone'),room:g('ap_room'),category:g('ap_category'),task:g('ap_task')||txt,task_type:'',responsible:g('ap_executor'),executor:g('ap_executor'),materials_status:'',purchase_required:'False',purchase_item_or_action:'',status:'Новая',priority:g('ap_priority'),deadline:okDate(g('ap_deadline')),comment:'Голос: '+txt.slice(0,500),mats:ms.length?ms.map(m=>m+'|'+MS[0]).join('\n'):'',pending:false,uz:{}};
- T.push(newTask);if(online)push({nt:[newTask]});else{NT.push(newTask);saveNT()}refresh();$('newTaskDlg').close();$('taskInput').value='';$('voiceStatus').textContent='';ntReset();toast('Задача '+nextId+' создана')};
+ ALL.push(newTask);scopeT();if(online)push({nt:[newTask]});else{NT.push(newTask);saveNT()}refresh();$('newTaskDlg').close();$('taskInput').value='';$('voiceStatus').textContent='';ntReset();toast('Задача '+nextId+' создана')};
 $('newTaskDlg').addEventListener('close',ntReset);
 
 // ---- Обработчики фото ----
