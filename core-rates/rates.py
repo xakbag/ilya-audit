@@ -71,11 +71,13 @@ class Answer:
     reason: str = ""
     values: list = field(default_factory=list)  # список Rate
     text: str = ""
+    clarify: bool = False  # B35c fix4: отказ-уточнение, который нужно показать пользователю как есть
 
     def as_dict(self) -> dict:
         return {
             "status": self.status,
             "reason": self.reason,
+            "clarify": self.clarify,
             "values": [r.value for r in self.values],
             "unit": self.values[0].unit if self.values else None,
             "text": self.text,
@@ -179,6 +181,20 @@ class RateTable:
     def ask(self, question: str, formulate: Optional[Callable[[str], str]] = None) -> Answer:
         obj, work, unit = self.parse(question)
         if obj is None:
+            # B35c fix4: вид работ есть в таблице, а дом не назван — не угадываем и не отдаём одну ставку,
+            # а просим уточнить дом (clarify=True: Core показывает это уточнение, а не идёт в поиск).
+            if work is not None:
+                rows = [r for r in self.rates if r.key[1] == work and (unit is None or r.key[2] == norm_unit(unit))]
+                if rows:
+                    objs = sorted({r.object for r in rows}, key=lambda s: (len(s), s))
+                    units = sorted({r.key[2] for r in rows})
+                    a = Answer("refuse", "no_object", clarify=True,
+                               text=(f"Уточните дом: ставки на «{work}» (руб/{', '.join(units)}) есть по объектам: "
+                                     f"{', '.join(objs)}. Значения отличаются по домам и версиям актов, "
+                                     f"одну ставку без дома не называю."))
+                    if formulate is not None:
+                        a.text = formulate(a.text)
+                    return a
             return Answer("refuse", "no_object", text="В вопросе не указан объект.")
         if work is None:
             return Answer("refuse", "unknown_work", text="Не распознан вид работ.")

@@ -91,6 +91,18 @@ class RatesTest(unittest.TestCase):
         t2 = RateTable([Rate(value=350, version="1", date="", **r), Rate(value=350, version="3", date="2026-06-29", **r)])
         self.assertEqual(t2.answer("дом 1", "x", "м²").status, "ok")
 
+    def test_b35c_no_object_asks_to_clarify_without_values(self):
+        a = self.t.ask("Сколько стоит террасная доска за м²?")
+        d = a.as_dict()
+        self.assertEqual((d["status"], d["reason"], d["clarify"], d["values"]), ("refuse", "no_object", True, []))
+        self.assertIn("Уточните дом", a.text)
+        self.assertIn("дом 10", a.text)
+        for n in ("3500", "4000", "1700", "2000"):
+            self.assertNotIn(n, a.text)
+        # неизвестная работа без дома — обычный отказ, без уточнения
+        b = self.t.ask("Сколько стоит укладка паркета за м²?")
+        self.assertEqual((b.reason, b.clarify), ("no_object", False))
+
     def test_eval_set_all_pass(self):
         m = run_eval.run(HERE / "sample-rates.json", HERE / "eval-set-sample.json")
         self.assertEqual(m["fails"], [], m["fails"])
