@@ -21,6 +21,10 @@ from typing import Callable, Optional
 UNIT_ALIASES = {
     "м2": "м²", "м^2": "м²", "кв.м": "м²", "кв м": "м²", "квадрат": "м²", "м²": "м²",
     "пм": "м", "п.м": "м", "пог.м": "м", "погонный": "м", "м": "м",
+    # B35c (предложение): единицы из rates.json, которые не распознавались
+    "к-т": "к-т", "кт": "к-т", "комплект": "к-т",
+    "ч/ч": "ч/ч", "чч": "ч/ч", "чел/ч": "ч/ч", "человеко-час": "ч/ч", "человеко-часы": "ч/ч",
+    "раб": "раб", "работа": "раб",
 }
 
 
@@ -37,7 +41,8 @@ def norm_object(o: str) -> str:
 
 
 def norm_work(w: str) -> str:
-    return re.sub(r"\s+", " ", w.strip().lower().replace("ё", "е"))
+    # B35c: завершающая точка (в rates.json встречается «…проемов.») не участвует в сравнении
+    return re.sub(r"\s+", " ", w.strip().lower().replace("ё", "е")).strip().rstrip(".").strip()
 
 
 @dataclass(frozen=True)
@@ -142,6 +147,12 @@ class RateTable:
             unit = "м²"
         elif re.search(r"погонн|п\.?\s?м\b|пог\.?\s?м|за метр\b|руб/м\b", q):
             unit = "м"
+        elif re.search(r"комплект|\bк-т\b", q):
+            unit = "к-т"
+        elif re.search(r"человеко-?час|\bч/ч\b|\bчел/ч", q):
+            unit = "ч/ч"
+        elif re.search(r"за работу\b|\bраб\b", q):
+            unit = "раб"
         work = None
         works = sorted({r.key[1] for r in self.rates}, key=len, reverse=True)
         for w in works:
