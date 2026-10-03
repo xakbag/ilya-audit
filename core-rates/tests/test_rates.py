@@ -103,6 +103,31 @@ class RatesTest(unittest.TestCase):
         b = self.t.ask("Сколько стоит укладка паркета за м²?")
         self.assertEqual((b.reason, b.clarify), ("no_object", False))
 
+    def test_b35d_work_synonyms(self):
+        rows = [
+            Rate("дом 10", "устройство кровли", "м²", 3500, "Акт A", "a1", "2026-05-01"),
+            Rate("дом 10", "устройство примыкания кровли пристройки к дому", "м", 4000, "Акт A", "a1", "2026-05-01"),
+            Rate("дом 9", "монтаж колонн", "м", 900, "Акт B", "b1", "2026-05-01"),
+        ]
+        t = RateTable(rows)
+        a = t.ask("Сколько стоит кровля на доме 10 за м²?")
+        self.assertEqual((a.status, [r.value for r in a.values]), ("ok", [3500]))
+        self.assertEqual(t.ask("Дом 10 крыша за м2").status, "ok")
+        # точное название в вопросе важнее синонима; единицы не смешиваются
+        b = t.ask("Дом 10 устройство примыкания кровли пристройки к дому за метр")
+        self.assertEqual([r.value for r in b.values], [4000])
+        self.assertEqual(t.ask("Дом 10 кровля за метр").reason, "unit_mismatch")
+        # исключения: другая работа со словом «кровля» не подменяется
+        self.assertEqual(t.ask("Дом 10 утепление кровли за м²").reason, "unknown_work")
+        self.assertEqual(t.ask("Дом 10 примыкание кровли за метр").reason, "unknown_work")
+        # у дома нет кровли — отказ «нет работы», без дома — уточнение
+        self.assertEqual(t.ask("Дом 9 кровля за м²").reason, "unknown_work")
+        c = t.ask("Кровля за м²")
+        self.assertEqual((c.reason, c.clarify), ("no_object", True))
+        self.assertNotIn("3500", c.text)
+        # синоним без канонической работы в таблице не срабатывает
+        self.assertEqual(t.ask("Дом 10 отмостка за м²").reason, "unknown_work")
+
     def test_eval_set_all_pass(self):
         m = run_eval.run(HERE / "sample-rates.json", HERE / "eval-set-sample.json")
         self.assertEqual(m["fails"], [], m["fails"])

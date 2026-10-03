@@ -31,6 +31,19 @@ UNIT_ALIASES = {
 }
 
 
+# B35d: синонимы видов работ (без LLM). Применяются, только если в вопросе нет точного названия
+# работы из таблицы и каноническое название в таблице есть. Шаблон (по нормализованному вопросу),
+# каноническое название, исключения: слова, при которых речь о другой работе (примыкание, утепление…).
+WORK_SYNONYMS = [
+    (r"\bкровл[яиюейё]\w*|\bкрыш[аиуеё]\w*", "устройство кровли",
+     r"примыкан|утеплен|скатн|козыр|фронтон|покраск|лес[аов]|мансард"),
+    (r"фундаментн\w* плит\w*|плит\w* фундамент\w*", "устройство фундаментной плиты",
+     r"утеплен|торц|анкеров|уборк|выпуск"),
+    (r"\bотмостк\w*", "бетонирование отмостки с устройством усиления по периметру",
+     r"резк|демонтаж|утеплен|дождепр|торц"),
+]
+
+
 def norm_unit(u: Optional[str]) -> Optional[str]:
     if u is None:
         return None
@@ -176,6 +189,12 @@ class RateTable:
             if w in q:
                 work = w
                 break
+        if work is None:
+            known = set(works)
+            for pat, canon, excl in WORK_SYNONYMS:
+                if canon in known and re.search(pat, q) and not re.search(excl, q):
+                    work = canon
+                    break
         return obj, work, unit
 
     def ask(self, question: str, formulate: Optional[Callable[[str], str]] = None) -> Answer:
