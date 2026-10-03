@@ -1,0 +1,28 @@
+{
+  "_note": "Эталонный набор. expect.status: ok | conflict | refuse. values — множество ожидаемых чисел; must_not — числа, которых не должно быть в ответе.",
+  "cases": [
+    {"id": "d10-terrace-m2", "q": "Сколько стоит террасная доска за м² на дом 10?",
+     "expect": {"status": "conflict", "values": [3500, 4000], "unit": "м²", "must_not": [1700, 2000],
+                "text_has": ["26.08", "комплексная строка"]}},
+    {"id": "d10-terrace-m2-alias", "q": "Дом №10, террасная доска, цена за кв.м",
+     "expect": {"status": "conflict", "values": [3500, 4000], "unit": "м²", "must_not": [1700, 2000]}},
+    {"id": "d10-terrace-m", "q": "Дом 10 террасная доска за погонный метр?",
+     "expect": {"status": "ok", "values": [2000], "unit": "м", "must_not": [3500, 4000]}},
+    {"id": "d10-terrace-nounit", "q": "Какая ставка на террасная доска по дому 10?",
+     "expect": {"status": "refuse", "reason": "ambiguous_unit", "must_not": [1700, 2000, 3500, 4000]}},
+    {"id": "d10-facade", "q": "Дом 10 покраска фасада за м2",
+     "expect": {"status": "ok", "values": [450], "unit": "м²"}},
+    {"id": "d10-facade-m", "q": "Дом 10 покраска фасада за погонный метр",
+     "expect": {"status": "refuse", "reason": "unit_mismatch", "must_not": [450]}},
+    {"id": "d7-facade-latest", "q": "Покраска фасада дом 7 за м²",
+     "expect": {"status": "ok", "values": [520], "unit": "м²", "text_has": ["Ранее"]}},
+    {"id": "d7-terrace", "q": "Дом 7 террасная доска за м²",
+     "expect": {"status": "refuse", "reason": "unknown_work", "must_not": [3500, 4000]}},
+    {"id": "d99", "q": "Дом 99 покраска фасада за м²",
+     "expect": {"status": "refuse", "reason": "unknown_object"}},
+    {"id": "no-object", "q": "Сколько стоит террасная доска за м²?",
+     "expect": {"status": "refuse", "reason": "no_object"}},
+    {"id": "unknown-work", "q": "Дом 10 укладка плитки за м²",
+     "expect": {"status": "refuse", "reason": "unknown_work"}}
+  ]
+}
