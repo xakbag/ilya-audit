@@ -1,0 +1,750 @@
+<!doctype html>
+<html lang="ru" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Журнал работ — Дом 2</title>
+<link rel="stylesheet" href="design-tokens.css">
+<style>
+/* Базовые стили поверх токенов */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  min-height: 100vh;
+  background: radial-gradient(1200px 700px at 10% -5%, var(--bg-layer2), transparent 65%),
+              radial-gradient(900px 600px at 90% 100%, var(--bg-layer3), transparent 70%),
+              var(--bg-base);
+  color: var(--tx);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+  padding: var(--space-md);
+}
+
+/* Контейнер */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Шапка */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+  flex-wrap: wrap;
+}
+
+.greeting {
+  color: var(--tx-secondary);
+  font-size: 0.875rem;
+}
+
+.title {
+  font-size: clamp(1.75rem, 5vw, 2.25rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--tx);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.clock {
+  font-size: 0.875rem;
+  color: var(--tx-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.controls {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  padding: 0.625rem 1.25rem;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border);
+  background: var(--surface-dim);
+  color: var(--tx);
+  font: inherit;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--easing);
+  min-height: 44px;
+}
+
+.btn:hover {
+  background: var(--surface-hover);
+  border-color: var(--border-strong);
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: var(--bg-base);
+  border-color: var(--accent);
+  font-weight: 600;
+}
+
+.btn-primary:hover {
+  background: var(--accent);
+  filter: brightness(1.1);
+}
+
+/* Основная сетка */
+.main-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-xl);
+}
+
+@media (min-width: 768px) {
+  .main-grid {
+    grid-template-columns: 280px 1fr;
+  }
+}
+
+/* Левая колонка иконок */
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.icon-btn {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-md);
+  background: var(--card);
+  border: 1px solid var(--border);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--easing);
+  font-size: 1.5rem;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.icon-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-near);
+  border-color: var(--accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .icon-btn:hover {
+    transform: none;
+  }
+}
+
+/* Область контента */
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+/* Панель прогресса */
+.progress-panel {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-lg);
+}
+
+@media (min-width: 640px) {
+  .progress-panel {
+    grid-template-columns: 200px 1fr;
+  }
+}
+
+.ring-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--space-sm);
+}
+
+/* Мини-карточка статистики */
+.stat-card {
+  background: var(--card-solid);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: var(--tx-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.stat-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--tx);
+  line-height: 1;
+}
+
+/* Столбики недели */
+.week-panel {
+  padding: var(--space-md);
+}
+
+.week-label {
+  font-size: 0.875rem;
+  color: var(--tx-secondary);
+  margin-bottom: var(--space-sm);
+}
+
+/* Список задач */
+.tasks-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-xs);
+}
+
+.section-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--tx);
+}
+
+.section-count {
+  font-size: 0.875rem;
+  color: var(--tx-secondary);
+  background: var(--surface-dim);
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-full);
+}
+
+.task-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+/* Карточка задачи */
+.task-card {
+  position: relative;
+  background: var(--card);
+  background-color: var(--card-solid);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  padding: var(--space-md);
+  box-shadow: var(--shadow-near), var(--shadow-far);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background-image: var(--card-gradient);
+  transition: transform var(--duration-mid) var(--easing),
+              box-shadow var(--duration-mid) var(--easing);
+  cursor: pointer;
+}
+
+.task-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-lg);
+  padding: 1px;
+  background: linear-gradient(135deg, var(--hl) 0%, transparent 50%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.task-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-hover-near), var(--shadow-hover-far);
+}
+
+.task-card--high {
+  border-left: 4px solid var(--error);
+}
+
+.task-card--medium {
+  border-left: 4px solid var(--warning);
+}
+
+.task-card--low {
+  border-left: 4px solid var(--success);
+}
+
+.task-card--done {
+  opacity: 0.7;
+}
+
+.task-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-xs);
+}
+
+.task-id {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--tx-tertiary);
+  background: var(--surface-dim);
+  padding: 0.25rem 0.625rem;
+  border-radius: var(--radius-full);
+}
+
+.task-title {
+  flex: 1;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--tx);
+  line-height: 1.4;
+}
+
+.task-title--done {
+  text-decoration: line-through;
+  color: var(--tx-secondary);
+}
+
+.task-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  align-items: center;
+  font-size: 0.8125rem;
+  color: var(--tx-secondary);
+}
+
+.task-tag {
+  padding: 0.25rem 0.625rem;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.task-tag--priority-high {
+  background: var(--error-bg);
+  color: var(--error);
+}
+
+.task-tag--priority-medium {
+  background: var(--warning-bg);
+  color: var(--warning);
+}
+
+.task-tag--priority-low {
+  background: var(--success-bg);
+  color: var(--success);
+}
+
+.task-tag--status {
+  background: var(--accent-bg);
+  color: var(--accent);
+}
+
+.done-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  background: transparent;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--easing);
+  flex-shrink: 0;
+}
+
+.done-btn:hover {
+  border-color: var(--success);
+  background: var(--success-bg);
+}
+
+.done-btn--checked {
+  background: var(--success);
+  border-color: var(--success);
+}
+
+.done-btn--checked::after {
+  content: '✓';
+  color: var(--bg-base);
+  font-weight: 700;
+  font-size: 0.875rem;
+}
+
+/* Ближайшие сроки */
+.deadlines-panel {
+  padding: var(--space-md);
+}
+
+.deadline-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.deadline-item:last-child {
+  border-bottom: none;
+}
+
+.deadline-date {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--accent);
+  min-width: 60px;
+}
+
+.deadline-task {
+  flex: 1;
+  font-size: 0.875rem;
+  color: var(--tx);
+}
+
+/* Фильтры */
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-md);
+}
+
+.filter-btn {
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--tx-secondary);
+  font: inherit;
+  font-size: 0.8125rem;
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--easing);
+}
+
+.filter-btn:hover {
+  background: var(--surface-dim);
+}
+
+.filter-btn--active {
+  background: var(--accent);
+  color: var(--bg-base);
+  border-color: var(--accent);
+  font-weight: 600;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .task-card,
+  .icon-btn,
+  .btn,
+  .bento-card {
+    transition: none;
+  }
+
+  .task-card:hover,
+  .icon-btn:hover {
+    transform: none;
+  }
+}
+
+/* Мобильная адаптация */
+@media (max-width: 640px) {
+  body {
+    padding: var(--space-sm);
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .controls {
+    width: 100%;
+  }
+
+  .btn {
+    flex: 1;
+    min-height: 48px;
+  }
+
+  .sidebar {
+    flex-direction: row;
+    overflow-x: auto;
+  }
+
+  .icon-btn {
+    flex-shrink: 0;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <!-- Шапка -->
+  <header class="header">
+    <div>
+      <div class="greeting" id="greeting">Доброе утро</div>
+      <h1 class="title">
+        <span>🏠</span>
+        <span>Дом 2 · Журнал работ</span>
+      </h1>
+      <div class="clock" id="clock">—</div>
+    </div>
+    <div class="controls">
+      <button class="btn" id="voiceBtn">🎤 Голосовой ввод</button>
+      <button class="btn btn-primary" id="addTask">➕ Поставить задачу</button>
+      <button class="btn" id="themeToggle" aria-label="Переключить тему">◐</button>
+    </div>
+  </header>
+
+  <!-- Основная сетка -->
+  <div class="main-grid">
+    <!-- Левая колонка иконок -->
+    <aside class="sidebar">
+      <button class="icon-btn" title="Обзор" data-view="overview">📊</button>
+      <button class="icon-btn" title="Задачи" data-view="tasks">✓</button>
+      <button class="icon-btn" title="Сроки" data-view="deadlines">📅</button>
+      <button class="icon-btn" title="Исполнители" data-view="team">👥</button>
+      <button class="icon-btn" title="Материалы" data-view="materials">📦</button>
+    </aside>
+
+    <!-- Контент -->
+    <main class="content">
+      <!-- Панель прогресса -->
+      <section class="bento-card progress-panel">
+        <div class="ring-container">
+          <div class="bento-ring" id="progressRing">
+            <svg viewBox="0 0 200 200">
+              <defs>
+                <linearGradient id="ring-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" style="stop-color:#38BDF8"/>
+                  <stop offset="100%" style="stop-color:#0EA5E9"/>
+                </linearGradient>
+              </defs>
+              <circle class="bento-ring__track" cx="100" cy="100" r="85"/>
+              <circle class="bento-ring__fill" cx="100" cy="100" r="85"
+                      stroke-dasharray="0 534" id="ringCircle"/>
+            </svg>
+            <div class="bento-ring__value">
+              <span id="progressPercent">0</span>%
+              <div class="bento-ring__label" id="progressLabel">выполнено</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">Всего</div>
+            <div class="stat-value" id="totalTasks">80</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Готово</div>
+            <div class="stat-value" id="doneTasks">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">В работе</div>
+            <div class="stat-value" id="inProgressTasks">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Новые</div>
+            <div class="stat-value" id="newTasks">80</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Столбики за неделю -->
+      <section class="bento-card week-panel">
+        <div class="week-label">Выполнено за неделю</div>
+        <div class="bento-bars" id="weekBars">
+          <div class="bento-bar bento-bar--new" style="height: 20%" title="Пн: 0"></div>
+          <div class="bento-bar bento-bar--new" style="height: 15%" title="Вт: 0"></div>
+          <div class="bento-bar bento-bar--progress" style="height: 35%" title="Ср: 0"></div>
+          <div class="bento-bar bento-bar--progress" style="height: 45%" title="Чт: 0"></div>
+          <div class="bento-bar bento-bar--done" style="height: 60%" title="Пт: 0"></div>
+          <div class="bento-bar bento-bar--done" style="height: 40%" title="Сб: 0"></div>
+          <div class="bento-bar bento-bar--new" style="height: 25%" title="Вс: 0"></div>
+        </div>
+      </section>
+
+      <!-- Фильтры -->
+      <div class="filters">
+        <button class="filter-btn filter-btn--active" data-filter="all">Все задачи</button>
+        <button class="filter-btn" data-filter="high">Высокий приоритет</button>
+        <button class="filter-btn" data-filter="inwork">В работе</button>
+        <button class="filter-btn" data-filter="deadline">Со сроком</button>
+      </div>
+
+      <!-- Список задач -->
+      <section class="tasks-section">
+        <div class="section-header">
+          <h2 class="section-title">Задачи</h2>
+          <span class="section-count" id="filteredCount">80</span>
+        </div>
+
+        <div class="task-list" id="taskList">
+          <!-- Задачи загружаются через JS -->
+        </div>
+      </section>
+
+      <!-- Ближайшие сроки -->
+      <section class="bento-card deadlines-panel" id="deadlinesPanel" style="display:none">
+        <div class="section-header" style="margin-bottom: var(--space-md)">
+          <h2 class="section-title">Ближайшие сроки</h2>
+        </div>
+        <div id="deadlinesList">
+          <!-- Сроки загружаются через JS -->
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<script src="../deploy/data.js"></script>
+<script>
+// Простой прототип без полного функционала deploy/index.html
+// Только рендер карточек, фильтры, переключатель темы и часы
+
+const T = window.TASKS || [];
+let currentFilter = 'all';
+
+// Часы и приветствие
+function updateClock() {
+  const now = new Date();
+  const h = now.getHours();
+  const m = String(now.getMinutes()).padStart(2, '0');
+  document.getElementById('clock').textContent = `${h}:${m}`;
+
+  const greeting = h < 12 ? 'Доброе утро' : h < 18 ? 'Добрый день' : 'Добрый вечер';
+  document.getElementById('greeting').textContent = greeting;
+}
+
+updateClock();
+setInterval(updateClock, 30000);
+
+// Статистика
+function updateStats() {
+  const total = T.length;
+  const done = T.filter(t => t.status === 'Выполнена').length;
+  const inProgress = T.filter(t => t.status === 'В работе').length;
+  const newTasks = T.filter(t => t.status === 'Новая').length;
+  const percent = total > 0 ? Math.round((done / total) * 100) : 0;
+
+  document.getElementById('totalTasks').textContent = total;
+  document.getElementById('doneTasks').textContent = done;
+  document.getElementById('inProgressTasks').textContent = inProgress;
+  document.getElementById('newTasks').textContent = newTasks;
+  document.getElementById('progressPercent').textContent = percent;
+
+  // Обновить кольцо (circumference = 2 * π * r = 2 * 3.14159 * 85 ≈ 534)
+  const circumference = 534;
+  const offset = circumference * (1 - percent / 100);
+  document.getElementById('ringCircle').setAttribute('stroke-dasharray', `${circumference - offset} ${offset}`);
+}
+
+// Рендер задач
+function renderTasks() {
+  let tasks = T.slice();
+
+  if (currentFilter === 'high') {
+    tasks = tasks.filter(t => t.priority === 'Высокий');
+  } else if (currentFilter === 'inwork') {
+    tasks = tasks.filter(t => t.status === 'В работе');
+  } else if (currentFilter === 'deadline') {
+    tasks = tasks.filter(t => t.deadline && t.deadline.trim());
+  }
+
+  document.getElementById('filteredCount').textContent = tasks.length;
+
+  const list = document.getElementById('taskList');
+  list.innerHTML = tasks.slice(0, 20).map(t => {
+    const priorityClass = t.priority === 'Высокий' ? 'high' : t.priority === 'Средний' ? 'medium' : 'low';
+    const isDone = t.status === 'Выполнена';
+
+    return `
+      <article class="task-card task-card--${priorityClass} ${isDone ? 'task-card--done' : ''}" data-id="${t.task_id}">
+        <div class="task-header">
+          <span class="task-id">${t.task_id}</span>
+          <h3 class="task-title ${isDone ? 'task-title--done' : ''}">${t.task || 'Без названия'}</h3>
+          <button class="done-btn ${isDone ? 'done-btn--checked' : ''}" data-id="${t.task_id}" aria-label="Выполнено"></button>
+        </div>
+        <div class="task-meta">
+          <span>${t.floor_zone || '—'} · ${t.room || '—'}</span>
+          ${t.executor ? `<span>👤 ${t.executor}</span>` : ''}
+          ${t.priority ? `<span class="task-tag task-tag--priority-${priorityClass}">${t.priority}</span>` : ''}
+          ${t.status && t.status !== 'Новая' ? `<span class="task-tag task-tag--status">${t.status}</span>` : ''}
+        </div>
+      </article>
+    `;
+  }).join('');
+}
+
+// Фильтры
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('filter-btn--active'));
+    btn.classList.add('filter-btn--active');
+    currentFilter = btn.dataset.filter;
+    renderTasks();
+  });
+});
+
+// Переключатель темы
+document.getElementById('themeToggle').addEventListener('click', () => {
+  const html = document.documentElement;
+  const current = html.getAttribute('data-theme');
+  const next = current === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  try {
+    localStorage.setItem('theme', next);
+  } catch {}
+});
+
+// Загрузить сохранённую тему
+try {
+  const saved = localStorage.getItem('theme');
+  if (saved) document.documentElement.setAttribute('data-theme', saved);
+} catch {}
+
+// Заглушки для голосового ввода и добавления задачи
+document.getElementById('voiceBtn').addEventListener('click', () => {
+  alert('Голосовой ввод — функция из deploy/index.html, в прототипе не подключена');
+});
+
+document.getElementById('addTask').addEventListener('click', () => {
+  alert('Добавление задачи — функция из deploy/index.html, в прототипе не подключена');
+});
+
+// Инициализация
+updateStats();
+renderTasks();
+</script>
+</body>
+</html>

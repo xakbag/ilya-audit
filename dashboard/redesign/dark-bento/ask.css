@@ -1,0 +1,38 @@
+/* ask.css — вкладка «Спросить» (B25). Цвета только из переменных styles.css: обе темы. */
+body:not([data-view=ask]) #ask-section{display:none}
+body[data-view=ask] main>section:not(#ask-section),
+body[data-view=ask] #export-out,
+body[data-view=ask] .foot{display:none}
+
+#ask-section{max-width:860px}
+.ask-hint{color:var(--mut);margin:0 0 12px;font-size:14px}
+.ask-form{padding:16px;border-radius:var(--r-lg);display:grid;gap:10px}
+.ask-label{font-weight:600}
+.ask-input{font:inherit;font-size:16px;width:100%;box-sizing:border-box;min-height:96px;padding:10px 12px;
+  color:var(--tx);background:var(--solid);border:1px solid var(--bd);border-radius:var(--r-md);resize:vertical}
+.ask-input:focus-visible{outline:3px solid var(--focus);outline-offset:1px}
+.ask-examples{display:flex;flex-wrap:wrap;gap:8px}
+.ask-ex{font-size:13px}
+.ask-row{display:flex;align-items:center;justify-content:flex-end;gap:12px}
+.ask-counter{color:var(--mut);font-size:13px;font-family:var(--mono)}
+.ask-counter.over{color:var(--fail)}
+.ask-send{font-weight:600}
+.ask-msg{margin:0;min-height:1.3em;font-size:14px;color:var(--mut)}
+.ask-hist-h{margin:20px 0 8px;font-size:16px}
+.ask-list{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.ask-item{padding:14px 16px;border-radius:var(--r-lg)}
+.ask-empty{color:var(--mut)}
+.ask-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.ask-time{color:var(--mut);font-size:12px}
+.ask-q{margin:8px 0 0;font-weight:600;overflow-wrap:anywhere}
+.ask-a{margin:8px 0 0;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.45}
+.ask-src{margin:6px 0 0;font-size:12px;color:var(--mut);overflow-wrap:anywhere}
+.ask-clear{margin-top:12px}
+.ask-clear[hidden]{display:none}
+
+@media (max-width:640px){
+  .ask-form .btn,.ask-clear{min-height:48px}
+  .ask-ex{flex:1 1 100%;text-align:left}
+  .ask-send{flex:1 1 auto}
+}
+@media (prefers-reduced-motion:reduce){.ask-form .btn{transition:none}}

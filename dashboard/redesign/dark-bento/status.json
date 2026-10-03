@@ -1,0 +1,136 @@
+{
+ "generated_at": "2026-09-30T18:08:32.009843+00:00",
+ "cards": [
+  {
+   "key": "core",
+   "title": "Core",
+   "source": "process",
+   "last_useful_result": null,
+   "age_s": null,
+   "wait_reason": "no_result_metric_yet",
+   "detail": {
+    "unit": "active"
+   },
+   "color": "gray"
+  },
+  {
+   "key": "gateway",
+   "title": "Шлюз / очередь",
+   "source": "result",
+   "last_useful_result": "2026-09-30T10:39:13.918054+00:00",
+   "age_s": 26957,
+   "wait_reason": "waiting_for_heavy",
+   "detail": {
+    "queued": 367,
+    "running": 0,
+    "completed": 184,
+    "failed": 0,
+    "mode": "LIGHT"
+   },
+   "color": "red"
+  },
+  {
+   "key": "controller",
+   "title": "Контроллер LIGHT/HEAVY",
+   "source": "self-report",
+   "last_useful_result": "2026-09-30T18:08:31.742441+00:00",
+   "age_s": 0,
+   "wait_reason": "waiting_for_heavy",
+   "detail": {
+    "mode": "LIGHT",
+    "override": {
+     "override": "AUTO"
+    },
+    "desired_model": "qwen3:4b",
+    "sched_state": "unloaded"
+   },
+   "color": "yellow"
+  },
+  {
+   "key": "qa",
+   "title": "Контур качества (QA)",
+   "source": "self-report",
+   "last_useful_result": "2026-09-27T16:22:49.675081+00:00",
+   "age_s": 265542,
+   "wait_reason": "awaiting_external_review(7)",
+   "detail": {
+    "state": "idle",
+    "checked": 0,
+    "awaiting": 7,
+    "errors": 0,
+    "fixes": 0
+   },
+   "color": "red"
+  },
+  {
+   "key": "executor",
+   "title": "Исполнитель",
+   "source": "self-report",
+   "last_useful_result": null,
+   "age_s": null,
+   "wait_reason": "no_completed_result_recorded",
+   "detail": {
+    "unit": "active",
+    "supervisor_healthy": true,
+    "incidents": 3,
+    "adapter": true,
+    "observed_at": "2026-09-30T18:08:27.099053+00:00"
+   },
+   "color": "gray"
+  },
+  {
+   "key": "backup",
+   "title": "Бэкапы (restic)",
+   "source": "result",
+   "last_useful_result": "2026-09-30T01:45:03.734438+00:00",
+   "age_s": 59008,
+   "wait_reason": null,
+   "detail": {
+    "note": "время новейшего файла снапшота; восстановление не проверяется"
+   },
+   "color": "green"
+  },
+  {
+   "key": "memory",
+   "title": "Память WSL / Windows",
+   "source": "process",
+   "last_useful_result": "2026-09-30T18:08:31.752915+00:00",
+   "age_s": 0,
+   "wait_reason": null,
+   "detail": {
+    "win_free_mib": null,
+    "wsl_avail_mib": 16629,
+    "wsl_total_mib": 20001,
+    "wsl_cache_mib": 15497,
+    "swap_used_mib": 1438
+   },
+   "color": "green"
+  },
+  {
+   "key": "chat",
+   "title": "Чат Core (БД задач)",
+   "source": "result",
+   "last_useful_result": "2026-09-27T16:22:47.680456+00:00",
+   "age_s": 265544,
+   "wait_reason": null,
+   "detail": {
+    "states": "cancelled=3, completed=42, failed=1",
+    "schema_ok": true
+   },
+   "color": "yellow"
+  },
+  {
+   "key": "db",
+   "title": "Базы SQLite",
+   "source": "result",
+   "last_useful_result": "2026-09-30T18:08:27.772257+00:00",
+   "age_s": 4,
+   "wait_reason": null,
+   "detail": {
+    "files": 5,
+    "locked_1h": 0
+   },
+   "color": "green"
+  }
+ ]
+}

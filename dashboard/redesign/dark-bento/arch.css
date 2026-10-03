@@ -1,0 +1,77 @@
+/* Вкладка «Архитектура» (D5b). Только токены из styles.css, без своих цветов. */
+
+/* Переключение вкладок: по hash (#architecture) arch.js ставит body[data-view]. */
+body[data-view=work] #architecture{display:none}
+body[data-view=arch] main>section:not(#architecture),
+body[data-view=arch] #export-out,
+body[data-view=arch] .foot{display:none}
+
+.arch-tools{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:0 0 10px}
+.arch-tools .goto{flex:1 1 280px}
+.zoom{display:inline-flex;gap:4px}
+.zoom .btn{min-width:40px;justify-content:center}
+
+.arch-body{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:var(--gap);align-items:start}
+.arch-canvas{overflow:auto;padding:10px;border-radius:var(--r-lg);max-height:78vh}
+.arch-canvas svg{display:block;max-width:none}
+.arch-panel{padding:16px;border-radius:var(--r-lg);position:sticky;top:10px;font-size:14px}
+.arch-panel h3{margin:0 0 4px;font-size:17px}
+.arch-panel h4{margin:14px 0 6px;font-size:14px}
+.arch-panel .st{margin:6px 0}
+.arch-panel .why-n{margin:6px 0;color:var(--tx)}
+.arch-panel .kv{display:grid;grid-template-columns:auto 1fr;gap:6px 10px;margin:10px 0 0}
+.arch-panel dt{color:var(--mut)}
+.arch-panel dd{margin:0;overflow-wrap:anywhere}
+.arch-panel code{font-family:var(--mono);font-size:12px}
+.arch-panel .links{margin:0;padding-left:18px;color:var(--tx)}
+.arch-panel .links li{margin:3px 0}
+.arch-panel .links li.flow{font-weight:600}
+
+/* узлы */
+.node{cursor:pointer;outline:none}
+.node rect{fill:var(--solid);stroke:var(--bd);stroke-width:1.5;transition:stroke var(--t-fast),opacity var(--t-mid)}
+.node .t{font:600 14px var(--font);fill:var(--tx)}
+.node .s{font:600 12px var(--font)}
+.node .m{font:12px var(--font);fill:var(--mut)}
+.node.ok .dot,.node.ok .s{fill:var(--ok)}     .node.ok rect{stroke:var(--ok)}
+.node.warn .dot,.node.warn .s{fill:var(--warn)} .node.warn rect{stroke:var(--warn)}
+.node.fail .dot,.node.fail .s{fill:var(--fail)} .node.fail rect{stroke:var(--fail)}
+.node.unknown .dot,.node.unknown .s{fill:var(--unknown)}
+.node.stale .dot,.node.stale .s{fill:var(--stale)} .node.stale rect{stroke:var(--stale)}
+.node:hover rect{stroke-width:2.5}
+.node:focus-visible rect,.node.sel rect{stroke:var(--focus);stroke-width:3}
+.node.hit rect{stroke:var(--focus);stroke-dasharray:6 3;stroke-width:2.5}
+.node.dim{opacity:.35}
+.node.on rect{stroke:var(--focus);stroke-width:3}
+
+/* связи: статичная — пунктир; поток — бегущий штрих (только по реальному событию) */
+.edge{stroke:var(--mut);stroke-width:1.6;fill:none}
+.edge.still{stroke-dasharray:3 5;opacity:.7}
+.edge.flow{stroke:var(--ok);stroke-width:2.6;stroke-dasharray:10 8;animation:flow 1.2s linear infinite}
+.edge.dim{opacity:.18}
+.edge.on{stroke:var(--focus);stroke-width:3.4;opacity:1}
+.arr{fill:var(--mut)}
+.anim-off .edge.flow{animation:none}
+@keyframes flow{to{stroke-dashoffset:-36}}
+
+.arch-path{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:12px 16px;margin:var(--gap) 0 8px;border-radius:var(--r-lg)}
+.arch-path label{font-weight:600}
+.arch-path select{font:inherit;font-size:13px;min-height:36px;padding:4px 10px;color:var(--tx);background:var(--solid);border:1px solid var(--bd);border-radius:10px;max-width:100%}
+
+.legend{display:flex;flex-wrap:wrap;gap:8px 14px;list-style:none;padding:0;margin:6px 0;font-size:12px;color:var(--mut);align-items:center}
+.legend li{display:inline-flex;align-items:center;gap:6px}
+.lg{display:inline-block;width:28px;height:0;border-top:3px dashed var(--mut)}
+.lg.flow{border-top-color:var(--ok)}
+.lg.still{border-top-width:2px;border-top-style:dotted}
+
+@media (prefers-reduced-motion:reduce){ .edge.flow{animation:none;stroke-dasharray:none} }
+
+@media (max-width:900px){
+  .arch-body{grid-template-columns:1fr}
+  .arch-panel{position:static}
+}
+@media (max-width:620px){
+  .arch-path select{min-height:48px;flex:1 1 100%}
+  .zoom .btn{min-width:48px}
+}
+@media print{ .edge.flow{animation:none} .arch-canvas{max-height:none;overflow:visible} }

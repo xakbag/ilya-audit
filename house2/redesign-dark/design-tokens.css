@@ -1,0 +1,276 @@
+/* Токены объёмной бенто-темы для Дома 2 и доски (B32) — тёмная по умолчанию, светлая через [data-theme=light].
+   Главное: карточки ОБЪЁМНЫЕ — слои теней, inner highlight, градиенты, стекло с запасным цветом.
+   Hover: подъём 2–4px, 150–200ms, без масштаба >1.02. prefers-reduced-motion — без анимации.
+   Контраст ≥4.5, цели ≥48px мобиле, без горизонтальной прокрутки. */
+
+:root {
+  /* ========== Тёмная тема (по умолчанию) ========== */
+  --bg-base: #05070C;
+  --bg-layer1: #0A0D12;
+  --bg-layer2: #0F131C;
+  --bg-layer3: #161D2B;
+  --bg-layer4: #1E2636;
+
+  /* Карточка: стекло с запасным непрозрачным цветом */
+  --card: rgba(26, 33, 48, 0.88);
+  --card-solid: #1a2130;
+
+  /* Тени: ближняя резкая + дальняя мягкая */
+  --shadow-near: 0 2px 8px rgba(0, 0, 0, 0.5);
+  --shadow-far: 0 12px 40px rgba(0, 0, 0, 0.7);
+  --shadow-hover-near: 0 4px 12px rgba(0, 0, 0, 0.6);
+  --shadow-hover-far: 0 16px 48px rgba(0, 0, 0, 0.75);
+
+  /* Inner highlight: светлая кромка сверху/слева */
+  --hl: rgba(255, 255, 255, 0.08);
+
+  /* Текст */
+  --tx: #E9EDF2;
+  --tx-secondary: #A0A8B5;
+  --tx-tertiary: #6B7280;
+
+  /* Акцент: бирюзовый (данные) — один главный */
+  --accent: #38BDF8;
+  --accent-dim: #0E7490;
+  --accent-bg: rgba(56, 189, 248, 0.12);
+
+  /* Поддержка: изумрудный для успеха, янтарный для предупреждений */
+  --success: #6EE7B7;
+  --success-dim: #065F46;
+  --success-bg: rgba(110, 231, 183, 0.12);
+
+  --warning: #FCD34D;
+  --warning-dim: #92400E;
+  --warning-bg: rgba(252, 211, 77, 0.12);
+
+  --error: #F87171;
+  --error-dim: #7F1D1D;
+  --error-bg: rgba(248, 113, 113, 0.12);
+
+  /* Нейтральные поверхности */
+  --surface-dim: rgba(255, 255, 255, 0.05);
+  --surface-hover: rgba(255, 255, 255, 0.08);
+  --border: rgba(255, 255, 255, 0.12);
+  --border-strong: rgba(255, 255, 255, 0.2);
+
+  /* Градиенты для колец и столбиков */
+  --ring-gradient: linear-gradient(135deg, var(--accent) 0%, #0EA5E9 100%);
+  --bar-gradient-done: linear-gradient(135deg, var(--success) 0%, #34D399 100%);
+  --bar-gradient-progress: linear-gradient(135deg, var(--warning) 0%, #FBBF24 100%);
+  --bar-gradient-new: linear-gradient(135deg, var(--accent) 0%, #60A5FA 100%);
+
+  /* Поверхность карточки: лёгкий градиент */
+  --card-gradient: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
+
+  /* Радиусы */
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 20px;
+  --radius-full: 999px;
+
+  /* Отступы */
+  --space-xs: 8px;
+  --space-sm: 12px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+
+  /* Время анимаций */
+  --duration-fast: 150ms;
+  --duration-mid: 200ms;
+  --duration-slow: 300ms;
+  --easing: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Подъём карточки при hover */
+  --lift: 3px;
+}
+
+/* ========== Светлая тема ========== */
+:root[data-theme="light"] {
+  --bg-base: #FAFBFC;
+  --bg-layer1: #F3F4F6;
+  --bg-layer2: #E5E7EB;
+  --bg-layer3: #D1D5DB;
+  --bg-layer4: #9CA3AF;
+
+  --card: rgba(255, 255, 255, 0.75);
+  --card-solid: #ffffff;
+
+  --shadow-near: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-far: 0 12px 40px rgba(0, 0, 0, 0.12);
+  --shadow-hover-near: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --shadow-hover-far: 0 16px 48px rgba(0, 0, 0, 0.15);
+
+  --hl: rgba(255, 255, 255, 0.6);
+
+  --tx: #111827;
+  --tx-secondary: #4B5563;
+  --tx-tertiary: #9CA3AF;
+
+  --accent: #0891B2;
+  --accent-dim: #CFFAFE;
+  --accent-bg: rgba(8, 145, 178, 0.1);
+
+  --success: #059669;
+  --success-dim: #D1FAE5;
+  --success-bg: rgba(5, 150, 105, 0.1);
+
+  --warning: #D97706;
+  --warning-dim: #FEF3C7;
+  --warning-bg: rgba(217, 119, 6, 0.1);
+
+  --error: #DC2626;
+  --error-dim: #FEE2E2;
+  --error-bg: rgba(220, 38, 38, 0.1);
+
+  --surface-dim: rgba(0, 0, 0, 0.03);
+  --surface-hover: rgba(0, 0, 0, 0.05);
+  --border: rgba(0, 0, 0, 0.1);
+  --border-strong: rgba(0, 0, 0, 0.15);
+
+  --ring-gradient: linear-gradient(135deg, #0891B2 0%, #06B6D4 100%);
+  --bar-gradient-done: linear-gradient(135deg, #059669 0%, #10B981 100%);
+  --bar-gradient-progress: linear-gradient(135deg, #D97706 0%, #F59E0B 100%);
+  --bar-gradient-new: linear-gradient(135deg, #0891B2 0%, #3B82F6 100%);
+
+  --card-gradient: linear-gradient(135deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.2) 100%);
+}
+
+/* ========== Базовые стили карточки ========== */
+.bento-card {
+  position: relative;
+  background: var(--card);
+  /* Запасной непрозрачный цвет для браузеров без backdrop-filter */
+  background-color: var(--card-solid);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  padding: var(--space-md);
+
+  /* Слоистые тени */
+  box-shadow: var(--shadow-near), var(--shadow-far);
+
+  /* Стекло */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  /* Градиент поверхности поверх стекла */
+  background-image: var(--card-gradient);
+  background-blend-mode: overlay;
+
+  /* Подъём при hover */
+  transition: transform var(--duration-mid) var(--easing),
+              box-shadow var(--duration-mid) var(--easing);
+}
+
+.bento-card::before {
+  /* Inner highlight: светлая кромка сверху/слева */
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-lg);
+  padding: 1px;
+  background: linear-gradient(135deg, var(--hl) 0%, transparent 50%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.bento-card:hover {
+  transform: translateY(calc(-1 * var(--lift)));
+  box-shadow: var(--shadow-hover-near), var(--shadow-hover-far);
+}
+
+/* prefers-reduced-motion: без анимации */
+@media (prefers-reduced-motion: reduce) {
+  .bento-card {
+    transition: none;
+  }
+  .bento-card:hover {
+    transform: none;
+  }
+}
+
+/* ========== Кольцо прогресса (gauge) ========== */
+.bento-ring {
+  position: relative;
+  width: 180px;
+  height: 180px;
+}
+
+.bento-ring svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.bento-ring__track {
+  fill: none;
+  stroke: var(--surface-dim);
+  stroke-width: 12;
+  stroke-linecap: round;
+}
+
+.bento-ring__fill {
+  fill: none;
+  stroke: url(#ring-gradient);
+  stroke-width: 12;
+  stroke-linecap: round;
+  transition: stroke-dasharray var(--duration-slow) var(--easing);
+  filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.4));
+}
+
+.bento-ring__value {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--tx);
+  letter-spacing: -0.02em;
+}
+
+.bento-ring__label {
+  font-size: 0.875rem;
+  color: var(--tx-secondary);
+  margin-top: var(--space-xs);
+}
+
+/* ========== Столбики за неделю ========== */
+.bento-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  height: 80px;
+}
+
+.bento-bar {
+  flex: 1;
+  min-width: 0;
+  border-radius: 6px 6px 0 0;
+  background: var(--bar-gradient-new);
+  transition: transform var(--duration-fast) var(--easing);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.bento-bar--done {
+  background: var(--bar-gradient-done);
+}
+
+.bento-bar--progress {
+  background: var(--bar-gradient-progress);
+}
+
+.bento-bar:hover {
+  transform: translateY(-2px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bento-bar:hover {
+    transform: none;
+  }
+}
