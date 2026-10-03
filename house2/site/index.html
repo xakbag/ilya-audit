@@ -192,8 +192,8 @@ Object.assign(I.ru,{byZone:'Прогресс по зонам',team:'Исполн
 Object.assign(I.ru,{f_arch:'Архив',matT:'Материалы',noMat:'Материалы не указаны',addMat:'Добавить',matPh:'Название материала',roMsg:'Только просмотр: без кода правки не сохраняются',syncErr:'Нет связи с сервером — правка не сохранена'});
 Object.assign(I.uz,{f_arch:'Arxiv',matT:'Materiallar',noMat:'Materiallar ko‘rsatilmagan',addMat:'Qo‘shish',matPh:'Material nomi',roMsg:'Faqat ko‘rish: tahrirlash kalitli havola orqali',syncErr:'Server bilan aloqa yo‘q — saqlanmadi'});
 Object.assign(I.uz,{byZone:'Hududlar bo‘yicha',team:'Ijrochilar',tasksN:'Vazifa',ready:'Tayyor',notSt:'Boshlanmagan',lateS:'Muddati o‘tgan',ofAll:'jamidan',tapEx:'bosing — vazifalarni ko‘rsataman',allEx:'Barcha ijrochilar'});
-Object.assign(I.ru,{loginTitle:’Вход’,loginBtn:’Войти’,loginError:’Неверный логин или пароль’,loginAttempts:’Слишком много попыток, подождите’,object:’Объект’,allObj:’Все объекты’,photos:’Фото’,addPhoto:’Добавить фото’,photoUploading:’Загрузка…’,photoPending:’На проверке’,photoApproved:’Принято’,photoRevision:’Доработать’,photoReview:’Оценить’});
-Object.assign(I.uz,{loginTitle:’Kirish’,loginBtn:’Kirish’,loginError:’Login yoki parol noto’g’ri’,loginAttempts:’Juda ko’p urinishlar, kuting’,object:’Obyekt’,allObj:’Barcha obyektlar’,photos:’Foto’,addPhoto:’Foto qo’shish’,photoUploading:’Yuklanmoqda…’,photoPending:’Tekshiruvda’,photoApproved:’Qabul qilindi’,photoRevision:’Qayta ishlash’,photoReview:’Baholash’});
+Object.assign(I.ru,{loginTitle:'Вход',loginBtn:'Войти',loginError:'Неверный логин или пароль',loginAttempts:'Слишком много попыток, подождите',object:'Объект',allObj:'Все объекты',photos:'Фото',addPhoto:'Добавить фото',photoUploading:'Загрузка…',photoPending:'На проверке',photoApproved:'Принято',photoRevision:'Доработать',photoReview:'Оценить'});
+Object.assign(I.uz,{loginTitle:'Kirish',loginBtn:'Kirish',loginError:'Login yoki parol noto’g’ri',loginAttempts:'Juda ko’p urinishlar, kuting',object:'Obyekt',allObj:'Barcha obyektlar',photos:'Foto',addPhoto:'Foto qo’shish',photoUploading:'Yuklanmoqda…',photoPending:'Tekshiruvda',photoApproved:'Qabul qilindi',photoRevision:'Qayta ishlash',photoReview:'Baholash'});
 let L=(()=>{try{return localStorage.getItem('lang')}catch(e){}})()||'ru',fl={},kf='',cur=null,curObj=null,sessionUser=null,sessionRole=null;
 const OBJECTS=['Дом 2','Сколково','Переделкино-2','Переделкино-3'];
 const OBJ_PREFIX={'Дом 2':'D2-','Сколково':'SK-','Переделкино-2':'P2-','Переделкино-3':'P3-'};
@@ -316,7 +316,7 @@ function renderObjSwitch(){
 }
 $('objSwitch').onclick=e=>{const b=e.target.closest('[data-obj]');if(b)setCurrentObject(b.dataset.obj)};
 try{curObj=localStorage.getItem('curObj')||null}catch(_){}
-if(curObj&&!OBJECTS.includes(curObj))curObj=null;
+if(curObj&&!OBJECTS.includes(curObj))curObj=null;renderObjSwitch();
 function applyState(st){if(!st||typeof st!=='object')return;online=true;
  ed=st.ed&&typeof st.ed==='object'?st.ed:{};bought=st.bought&&typeof st.bought==='object'?st.bought:{};
  photos=st.photos&&typeof st.photos==='object'?st.photos:{};
