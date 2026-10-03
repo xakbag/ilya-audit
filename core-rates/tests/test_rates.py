@@ -65,6 +65,21 @@ class RatesTest(unittest.TestCase):
         for q in ("дом 1 x за кв. м", "дом 1 x, квадратный метр", "дом 1 x за м.кв", "дом 1 x кв.м."):
             self.assertEqual(t.ask(q).as_dict()["values"], [900], q)
 
+    def test_b35c_value_rounded_to_kopecks(self):
+        import json, tempfile, os
+        row = dict(object="дом 1", work="x", unit="м", value=3300.0000000000005, document="d",
+                   version="1", date="2026-01-01")
+        with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False, encoding="utf-8") as f:
+            json.dump({"rates": [row, {**row, "value": 21739.13043478261, "unit": "шт"}]}, f)
+        try:
+            t = RateTable.from_json(f.name)
+        finally:
+            os.unlink(f.name)
+        a = t.answer("дом 1", "x", "м")
+        self.assertEqual(a.as_dict()["values"], [3300])
+        self.assertIn("3300 руб/м", a.text)
+        self.assertEqual(t.answer("дом 1", "x", "шт").as_dict()["values"], [21739.13])
+
     def test_eval_set_all_pass(self):
         m = run_eval.run(HERE / "sample-rates.json", HERE / "eval-set-sample.json")
         self.assertEqual(m["fails"], [], m["fails"])

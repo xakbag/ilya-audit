@@ -98,7 +98,8 @@ class RateTable:
     @classmethod
     def from_json(cls, path: str | Path) -> "RateTable":
         data = json.loads(Path(path).read_text(encoding="utf-8"))
-        return cls([Rate(**r) for r in data["rates"]])
+        # B35c fix2: значения из актов приходят с хвостами float (3300.0000000000005) — до копеек
+        return cls([Rate(**{**r, "value": round(float(r["value"]), 2)}) for r in data["rates"]])
 
     def objects(self) -> set:
         return {r.key[0] for r in self.rates}
