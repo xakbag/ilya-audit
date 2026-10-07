@@ -53,3 +53,7 @@
 - step145 v2 DEPLOY OK; rollback: python3 /var/lib/ilya-map/monitor/core-house-scope-step145-20261005T182513Z/rollback.py. evidence/step145-deploy-v2-result.json; health обеихслужб active/NRestarts0, ready=true.
 - step145 свежая очередь21:29МСК: task49198114c6d14da48d2e5f5aa214d25e completed/confirmed_correct,12источников нужного дома,1.092с. evidence/step145-queue-live.json.
 - step145 all-houses-live:19/19+19/19;18систочниками,1отказ,только3verifiedценовых ответа по одному шаблону; не считать проверкой всех вопросов. evidence/step145-all-houses-live.json.
+
+## 07.10 — перевод задач сайта (step147)
+- ai-ilya.online опубликован: 90/90 текущих задач UZ, 250 записей словаря, 22 смысловые доработки Astra; RU/UZ и материалы проверены live, данные задач не изменены. evidence/step147-journal-uz-20261007.json. Новые/изменённые тексты требуют отдельного обновления перевода; автоматического перевода нет.
+- Backup index: /var/lib/ilya-map/monitor/journal-uz-20261007/index.html; откат — вернуть его через прежний SFTP-публикатор. work/journal-uz-20261007. Исполнители/Core/юридические задачи этим шагом не закрыты.
