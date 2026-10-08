@@ -1,8 +1,6 @@
-# HANDOFF — ILYA CORE, 05.10.2026, переход в новый чат
+# HANDOFF — ILYA CORE, обновлено 08.10.2026
 ## Цель и последнее решение
-- Пользователь продолжил работу по HANDOFF. step143: узкий модуль заказан Astra и проверен; обе версии отклонены, сервер не менялся.
 - Главная цель: исправить ответы Core по строительным документам, исключить чужой дом/проект, проверить свежую полную цепочку. Дедлайн05.10 19:00 МСК пропущен; полная готовность НЕ достигнута.
-- Последний запрос до перехода: «Ну что тогда делать будешь?»; интеграционный патч заказан Astra, обе версии отклонены при проверке, не выложены.
 ## Исполнитель, доступ и разрешения
 - Только gpt-6-astra через Portix API; Codex постановка/независимая проверка/контролируемое применение. Встроенные агенты, FreeLLM и скрытый fallback запрещены.
 - Skill C:/Users/Илья Работа/.codex/skills/portix-astra-worker/SKILL.md; runner scripts/run.py. После каждого API процесса отдельный tools/portix-minute-monitor.py; metadata проверять всегда.
@@ -46,15 +44,17 @@
 - ФАКТ (только чтение): .148 — ТВ на Салют ТВ/StarOS (mDNS _staros, MAC CVTE, порты 8008/8009); .124 — Android TV «TV BOX» (androidtvremote2, Кинопоиск), ТВ или приставка — не различить по сети. Не ТВ: .149 Яндекс Станция Миди, .72 iPhone/iPad, .34 телефон(?). Дома (192.168.0.x): Samsung QE75Q60T .169, Amlogic-приставка .207. Скрипты в scratchpad, на устройствах ничего не менялось.
 - Салют ТВ .148 (ФАКТ, сеть, 05.10 ~21:00): StarOS/Салют ТВ v1.103.90-b32204, плата CVTE, имя TV-3HR, порты 8008/8009 (Cast), 20000 (staros), 50833 (AirPlay-эмуляция), ADB закрыт. Модель/шасси неизвестны (нужна наклейка). Android TV: официально нет; по выдержкам поиска 4PDA (тема CV9632, сама тема не прочитана — 429) есть неофициальная Android TV 4.16.031 для шасси CV9632. Безопасный путь — официальный ADB через developers.sber.ru + лаунчер. Ничего не скачивалось и не менялось.
 - 4PDA (архив шапки 26.09.26, живая тема 429 из-за VPN): у большинства ТВ с Салют ТВ шасси CVTE CV9632 (MT9632, Android 9). Есть неофициальные Android TV 4.16.031 (ADB root) и ATV 11; бэкап/UART/восстановление описаны; у CV9632-KH (Starwind) прошивки не подошли; для CV6681 смена ОС не подтверждена. Ждём: модель с наклейки, выбор пути (HDMI-приставка / ADB+лаунчер / прошивка).
-- Следующее действие: Astra исправляет два оставшихся protected_holdout: absence_not_explained/excerpt_not_grounded и missing_semantics. Дом исправлен, общая готовность Core НЕ достигнута;4нестандартные метки дома отдельно не проверены.
 - step145: рабочий кандидат work/core-integration-step145/guarded-candidate. При первом деплое импорт apps был недоступен smart-core, автооткат подтверждён; v2 кладёт одинаковый house_scope.py в apps/ и core/app/, права не расширены.
 - 05.10 21:20 Илья выбрал полную замену на Android TV. План: docs/salute-tv-android-tv-plan.md. Ждём: вход в developers.sber.ru (открыт во встроенном браузере), модель с наклейки, «да» на скачивание platform-tools (8,0 МБ, dl.google.com), флешка 16+ ГБ. Ничего не скачано и не изменено.
 - 05.10 21:25 Илья: без ADB/кабинета Сбера — бэкап с флешки → прошивка с флешки. platform-tools скачан (work/salute-tv, SHA1 совпал с репо Google). Ждём: скрипты boot_backup/emmc_backup с 4PDA (качает Илья) в work/salute-tv, флешка 16+ ГБ в ноутбук. Кабинет Сбера не менялся (клики блокировались защитой).
 - step145 v2 DEPLOY OK; rollback: python3 /var/lib/ilya-map/monitor/core-house-scope-step145-20261005T182513Z/rollback.py. evidence/step145-deploy-v2-result.json; health обеихслужб active/NRestarts0, ready=true.
 - step145 свежая очередь21:29МСК: task49198114c6d14da48d2e5f5aa214d25e completed/confirmed_correct,12источников нужного дома,1.092с. evidence/step145-queue-live.json.
 - step145 all-houses-live:19/19+19/19;18систочниками,1отказ,только3verifiedценовых ответа по одному шаблону; не считать проверкой всех вопросов. evidence/step145-all-houses-live.json.
-
 ## 07.10 — перевод задач сайта (step147)
 - ai-ilya.online опубликован: 90/90 текущих задач UZ, 250 записей словаря, 22 смысловые доработки Astra; RU/UZ и материалы проверены live, данные задач не изменены. evidence/step147-journal-uz-20261007.json. Новые/изменённые тексты требуют отдельного обновления перевода; автоматического перевода нет.
 - Backup index: /var/lib/ilya-map/monitor/journal-uz-20261007/index.html; откат — вернуть его через прежний SFTP-публикатор. work/journal-uz-20261007. Исполнители/Core/юридические задачи этим шагом не закрыты.
-- step148 автоперевод НЕ установлен: Portix доступен, но worker отклонён (CLI/маскирование/состояние), repair files={}, узкий core import ...; повторы остановлены. Все API завершены, сервер не менялся. work/journal-auto-uz-20261007; evidence/step148-auto-uz-blocked-20261007.json.
+## 08.10 — исполнители, Core, автоперевод (step149–151)
+- LIVE исполнители: добавление/переименование/алиасы,7PHP-тестов,11имён; сохранение без смены имени и прокрутка проверены. Backup /var/lib/ilya-map/monitor/journal-performers-step149-20261008T075105Z.
+- LIVE Core:3/3protected_holdout,19/19домов+19/19конфликтов,14rates+17eval; свежая очередь completed/confirmed_correct. Откат python3 /var/lib/ilya-map/monitor/core-evidence-step150-20261008T075020Z/rollback.py. 4нестандартные метки отдельно не проверены.
+- LIVE автоперевод: journal-uz.timer каждую60с, /opt/journal-uz, состояние /var/lib/journal-uz/status.json; pending0/errors0; генерация+ревью Astra,кэш,безавтоповторовошибок. Реальный синтетический тест принят со2попытки; настоящихновыхзадачне создавали.
+- Evidence evidence/step149-151-resume-20261008.json; исходники work/resume-20261008. Backup frontend /var/lib/ilya-map/monitor/journal-auto-step151-20261008T075939Z. Ключ только manager environment, после перезагрузки может потребоваться восстановление. Следующее: наблюдать перевод первой новой/изменённой задачи; не повторять выполненные тесты. Core monitor 20261008T095355Z: live3/3,дом19/19,конфликт19/19,rates14/14,eval17/17; очередь completed/confirmed_correct1.383с. Регрессий нет;4нестандартные метки не проверены. Evidence evidence/core-monitor/20261008T095355Z.json. Следующее: очередной часовой прогон по automation ilya-core-30.
